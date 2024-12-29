@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Check if docs/resources.html exists
+      # Step 2: Verify resources.html exists
       - name: Verify resources.html
         run: |
           if [ ! -f docs/resources.html ]; then
@@ -27,14 +27,11 @@ jobs:
         run: |
           sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" docs/resources.html
 
-      # Step 4: Check docs directory before deployment
-      - name: Check docs directory
+      # Step 4: Commit the changes
+      - name: Commit changes
         run: |
-          ls -R docs
-
-      # Step 5: Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add docs/resources.html
+          git commit -m "Update resources.html with password"
+          git push origin main

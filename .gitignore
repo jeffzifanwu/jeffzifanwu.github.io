@@ -1,4 +1,4 @@
 _site/
 *.Rproj
-.quarto/
 .Rproj.user/
+/.quarto/

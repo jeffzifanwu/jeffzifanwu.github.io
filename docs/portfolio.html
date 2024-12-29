@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>My learning resources – Jeff Wu</title>
+<title>Portfolio – Jeff Wu</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,6 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -66,7 +68,65 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -93,7 +153,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Appendices</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./portfolio.html"> 
+    <a class="nav-link active" href="./portfolio.html" aria-current="page"> 
 <span class="menu-text">Portfolio</span></a>
   </li>  
   <li class="nav-item">
@@ -101,7 +161,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Software</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./resources.html" aria-current="page"> 
+    <a class="nav-link" href="./resources.html"> 
 <span class="menu-text">Resources</span></a>
   </li>  
 </ul>
@@ -114,13 +174,13 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page">
-      <h1 class="title">My learning resources</h1>
+    <div class="quarto-title column-page-left">
+      <h1 class="title">Portfolio</h1>
                       </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page">
+  <div class="quarto-title-meta column-page-left">
 
       
     
@@ -131,132 +191,93 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="ZWNvbm9tZXRyaWNzJTIwJTI2JTIwc3RhdGlzdGljYWwlMjBtb2RlbGxpbmc=">econometrics &amp; statistical modelling <span class="quarto-category-count">(2)</span></div></div></div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page" id="quarto-document-content">
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
 
 
 
 
-<script>
-    // Encrypted password
-    const passwordHash = "aea5a5ee6792fab36f3c60e62ef64e40061a8dac7d868b359aff7a4786a32e51";
-
-    // Prompt user for the password
-    const userInput = prompt("Password:");
-
-    // Function to hash the user input
-    async function hashInput(input) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Verify the password
-    hashInput(userInput).then(inputHash => {
-        if (inputHash !== passwordHash) {
-            document.body.innerHTML = "<h1>Access Denied</h1><p>You do not have the correct password to access this page.</p>";
-        }
-    });
-</script>
-<section id="microeconomics" class="level1">
-<h1>Microeconomics</h1>
-<p>Jonathan Gruber (2018): <strong>Principles of Microeconomics</strong></p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=ftmvsahQ6Wo&amp;t=587s&amp;ab_channel=MITOpenCourseWare">5. Production theory</a></li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Details
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>[9:20]</strong> Marginal product of labour; <strong>[18:13]</strong> Marginal rate of technical substitution; <strong>[25:03]</strong> Return to scale; <strong>[31:39]</strong> Productivity.</li>
-<li>“The diminishing marginal product of labour arises from the notion of short-run production constraints, where capital remains fixed.”</li>
-</ul>
-</div>
-</div>
-</div>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=TSYNHb6YBEE&amp;ab_channel=MITOpenCourseWare">6. Costs</a></li>
-</ul>
-<p>Pollak and Wales (1992): <strong>Demand system specification &amp; estimation</strong></p>
-<ul>
-<li><p>Chapter 1: Linear Expenditure System (LES)</p></li>
-<li><p>Chapter 3: Demographic translating</p></li>
-</ul>
-</section>
-<section id="statistics-econometrics-data-science" class="level1">
-<h1>Statistics, econometrics, data science</h1>
-<p>Paul Sweeting (2023): <strong>Copluas</strong></p>
-<ul>
-<li><p><a href="https://www.youtube.com/watch?v=XZcoA1rGbgE&amp;ab_channel=PaulSweeting" title="The author's YouTube video.">5 - Working with copulas in R</a></p></li>
-<li><p><a href="https://www.youtube.com/watch?v=XZcoA1rGbgE&amp;ab_channel=PaulSweeting" title="The author's YouTube video.">3.1 - Choosing a copula</a></p></li>
-<li><p><a href="https://www.youtube.com/watch?v=gzUxg0OUHU4&amp;list=PLNt9IHkgoaro2jbfyd7QMa_FzL2vstco5&amp;index=2&amp;ab_channel=PaulSweeting" title="The author's YouTube video.">2 - After the basics</a></p></li>
-</ul>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Details
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<ul>
-<li><strong>14:14</strong> From marginal distributions to a copula distribution</li>
-<li><strong>18:28</strong> Building a normal copula by hand</li>
-</ul>
-</div>
-</div>
-</div>
-<p>Andreas Tilevik, 2021, <a href="https://www.tilestats.com/videos/%7D">Generalised linear models (GLMs)</a></p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=jnKDQtDy0Bg&amp;list=PLLTSM0eKjC2cYVUoex9WZpTEYyvw5buRc&amp;index=13&amp;ab_channel=TileStats">Quasi-Poisson, negative binomial</a></li>
-</ul>
-<p>Matt Masten, 2015, Duke University Social Science Research Institute: <a href="https://mattmasten.github.io/bootcamp/">Causal Inference Bootcamp</a></p>
-<ul>
-<li><p>Ch1: Average, unit level, conditional average treatment effects</p></li>
-<li><p>Ch3: Average treatment effects on the treated</p></li>
-</ul>
-<p>Gavin Simpson, 2020, <a href="https://www.youtube.com/watch?v=sgw4cu8hrZM&amp;ab_channel=BottomoftheHeap">Generalised additive models (GAM) with R and mgcv</a></p>
-<ul>
-<li><p>Model (over-)fitting: Penalised log-likelihood</p></li>
-<li><p>Smoothing: Basis functions, splines, interactions</p></li>
-</ul>
-</section>
-<section id="estimation" class="level1">
-<h1>Estimation</h1>
-<p>Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems</p>
-<ul>
-<li><p><a href="https://www.youtube.com/watch?v=X-vgLZmtZV0&amp;list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&amp;index=9&amp;ab_channel=MadhurBehl">Lecture 8: Non-linear parameter estimation - part 1</a></p></li>
-<li><p><a href="https://www.youtube.com/watch?v=6U2LFQkdKWk&amp;list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&amp;index=10&amp;ab_channel=MadhurBehl">Lecture 9: Non-linear parameter estimation - part 2</a></p></li>
-</ul>
-</section>
-<section id="control-theory-system-theory-optimisation" class="level1">
-<h1>Control theory, system theory, optimisation</h1>
-<p>Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems</p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=WvBYRkkpEa0&amp;list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&amp;index=4&amp;ab_channel=MadhurBehl">Lecture 2: State-space modelling</a></li>
-</ul>
 
 
-</section>
 
-</main> <!-- /main -->
+
+<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
+<div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-categories="ZWNvbm9tZXRyaWNzJTIwJTI2JTIwc3RhdGlzdGljYWwlMjBtb2RlbGxpbmc=" data-listing-date-sort="1734393600000" data-listing-file-modified-sort="1735498094327" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="2">
+<div class="thumbnail">
+<p><a href="./portfolio/PRP24/index.html" class="no-external"></a></p><a href="./portfolio/PRP24/index.html" class="no-external">
+<p><img loading="lazy" src="./portfolio/PRP24/image.jpg" class="thumbnail-image"></p>
+</a><p><a href="./portfolio/PRP24/index.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./portfolio/PRP24/index.html" class="no-external">Diagnosing and addressing collinear issues with proportion predictors</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./portfolio/PRP24/index.html" class="no-external"></a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('ZWNvbm9tZXRyaWNzJTIwJTI2JTIwc3RhdGlzdGljYWwlMjBtb2RlbGxpbmc='); return false;">
+econometrics &amp; statistical modelling
+</div>
+</div>
+<div class="listing-description">
+<a href="./portfolio/PRP24/index.html" class="no-external">Numerical experiments</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./portfolio/PRP24/index.html" class="no-external">
+<div class="listing-date">
+Dec 17, 2024
+</div>
+<div class="listing-author">
+Jeff Wu
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="ZWNvbm9tZXRyaWNzJTIwJTI2JTIwc3RhdGlzdGljYWwlMjBtb2RlbGxpbmc=" data-listing-date-sort="1727737200000" data-listing-file-modified-sort="1735498094335" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="18">
+<div class="thumbnail">
+<p><a href="./portfolio/SUR24/index.html" class="no-external"></a></p><a href="./portfolio/SUR24/index.html" class="no-external">
+<p><img loading="lazy" src="./portfolio/SUR24/image.jpg" class="thumbnail-image"></p>
+</a><p><a href="./portfolio/SUR24/index.html" class="no-external"></a></p>
+</div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./portfolio/SUR24/index.html" class="no-external">Comparing OLS and SUR methods in two settings</a>
+</h3>
+<div class="listing-subtitle">
+<a href="./portfolio/SUR24/index.html" class="no-external"></a>
+</div>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('ZWNvbm9tZXRyaWNzJTIwJTI2JTIwc3RhdGlzdGljYWwlMjBtb2RlbGxpbmc='); return false;">
+econometrics &amp; statistical modelling
+</div>
+</div>
+<div class="listing-description">
+<a href="./portfolio/SUR24/index.html" class="no-external">The settings are:</a>
+</div>
+</div>
+<div class="metadata">
+<a href="./portfolio/SUR24/index.html" class="no-external">
+<div class="listing-date">
+Oct 1, 2024
+</div>
+<div class="listing-author">
+Jeff Wu
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

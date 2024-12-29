@@ -27,16 +27,20 @@ jobs:
         run: |
           sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" docs/resources.html
 
-      # Step 4: Pull remote changes to avoid conflicts
+      # Step 4: Stage local changes
+      - name: Stage local changes
+        run: |
+          git add docs/resources.html
+
+      # Step 5: Pull remote changes to avoid conflicts
       - name: Pull latest changes
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git pull origin main --rebase
 
-      # Step 5: Commit and push changes
+      # Step 6: Commit and push changes
       - name: Commit and push changes
         run: |
-          git add docs/resources.html
-          git commit -m "Update resources.html with password"
+          git commit -m "Update resources.html with password" || echo "Nothing to commit"
           git push origin main

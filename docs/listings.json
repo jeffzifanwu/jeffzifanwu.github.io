@@ -1,0 +1,15 @@
+[
+  {
+    "listing": "/portfolio.html",
+    "items": [
+      "/portfolio/PRP24/index.html",
+      "/portfolio/SUR24/index.html"
+    ]
+  },
+  {
+    "listing": "/onlineAppendices.html",
+    "items": [
+      "/onlineAppendices/HW24/index.html"
+    ]
+  }
+]

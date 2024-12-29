@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "software.html",
+    "href": "software.html",
+    "title": "Software",
+    "section": "",
+    "text": "R package: dataHelper\nR repository template: rProject"
+  },
+  {
+    "objectID": "portfolio.html",
+    "href": "portfolio.html",
+    "title": "Portfolio",
+    "section": "",
+    "text": "Diagnosing and addressing collinear issues with proportion predictors\n\n\n\n\n\n\neconometrics & statistical modelling\n\n\n\n\n\n\n\n\n\nDec 17, 2024\n\n\nJeff Wu\n\n\n\n\n\n\n\n\n\n\n\n\nComparing OLS and SUR methods in two settings\n\n\n\n\n\n\neconometrics & statistical modelling\n\n\n\n\n\n\n\n\n\nOct 1, 2024\n\n\nJeff Wu\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "portfolio/PRP24/index.html",
+    "href": "portfolio/PRP24/index.html",
+    "title": "Diagnosing and addressing collinear issues with proportion predictors",
+    "section": "",
+    "text": "Numerical experiments"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Jeff Wu",
+    "section": "",
+    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my CV, LinkedIn, Google Scholar, and GitHub, offering a comprehensive view of my work and interests."
+  },
+  {
+    "objectID": "onlineAppendices.html",
+    "href": "onlineAppendices.html",
+    "title": "Online Appendices",
+    "section": "",
+    "text": "An essay of hybrid working\n\n\n\n\n\n\nthesis\n\n\n\n\n\n\n\n\n\nDec 17, 2024\n\n\nJeff Wu\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "portfolio/SUR24/index.html",
+    "href": "portfolio/SUR24/index.html",
+    "title": "Comparing OLS and SUR methods in two settings",
+    "section": "",
+    "text": "The settings are:\n\nLinear regression with panel data;\nSystem of linear equations with cross-sectional or longitudinal data.\n\nNumerical experiments"
+  },
+  {
+    "objectID": "resources.html",
+    "href": "resources.html",
+    "title": "My learning resources",
+    "section": "",
+    "text": "Microeconomics\nJonathan Gruber (2018): Principles of Microeconomics\n\n5. Production theory\n\n\n\n\n\n\n\nDetails\n\n\n\n\n\n\n[9:20] Marginal product of labour; [18:13] Marginal rate of technical substitution; [25:03] Return to scale; [31:39] Productivity.\n“The diminishing marginal product of labour arises from the notion of short-run production constraints, where capital remains fixed.”\n\n\n\n\n\n6. Costs\n\nPollak and Wales (1992): Demand system specification & estimation\n\nChapter 1: Linear Expenditure System (LES)\nChapter 3: Demographic translating\n\n\n\nStatistics, econometrics, data science\nPaul Sweeting (2023): Copluas\n\n5 - Working with copulas in R\n3.1 - Choosing a copula\n2 - After the basics\n\n\n\n\n\n\n\nDetails\n\n\n\n\n\n\n14:14 From marginal distributions to a copula distribution\n18:28 Building a normal copula by hand\n\n\n\n\nAndreas Tilevik, 2021, Generalised linear models (GLMs)\n\nQuasi-Poisson, negative binomial\n\nMatt Masten, 2015, Duke University Social Science Research Institute: Causal Inference Bootcamp\n\nCh1: Average, unit level, conditional average treatment effects\nCh3: Average treatment effects on the treated\n\nGavin Simpson, 2020, Generalised additive models (GAM) with R and mgcv\n\nModel (over-)fitting: Penalised log-likelihood\nSmoothing: Basis functions, splines, interactions\n\n\n\nEstimation\nMadhur Behl (2020), Principles of Modeling for Cyber-Physical Systems\n\nLecture 8: Non-linear parameter estimation - part 1\nLecture 9: Non-linear parameter estimation - part 2\n\n\n\nControl theory, system theory, optimisation\nMadhur Behl (2020), Principles of Modeling for Cyber-Physical Systems\n\nLecture 2: State-space modelling"
+  }
+]

@@ -3,30 +3,49 @@ name: Deploy Site
 on:
   push:
     branches:
-      - main  # Replace with the branch you use to deploy
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Check out the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Render the Quarto site
+      # Step 2: Install Quarto CLI
+      - name: Install Quarto
+        run: |
+          wget https://github.com/quarto-dev/quarto-cli/releases/latest/download/quarto-linux-amd64.deb
+          sudo dpkg -i quarto-linux-amd64.deb
+
+      # Step 3: Build the Quarto site
       - name: Build Quarto site
         run: |
           quarto render
 
-      # Step 3: Replace the placeholder with the real password
-      - name: Inject the password into resources.html
+      # Step 4: Check if resources.html exists in docs/
+      - name: Verify resources.html
         run: |
-          sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" _site/resources.html
+          if [ ! -f docs/resources.html ]; then
+            echo "Error: docs/resources.html does not exist"
+            exit 1
+          fi
 
-      # Step 4: Deploy to GitHub Pages
+      # Step 5: Inject the password into resources.html
+      - name: Inject the password
+        run: |
+          sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" docs/resources.html
+
+      # Step 6: List files in docs/ for debugging
+      - name: List files
+        run: |
+          ls -R docs
+
+      # Step 7: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _site
+          publish_dir: docs

@@ -14,18 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Install Quarto CLI
-      - name: Install Quarto
-        run: |
-          wget https://github.com/quarto-dev/quarto-cli/releases/latest/download/quarto-linux-amd64.deb
-          sudo dpkg -i quarto-linux-amd64.deb
-
-      # Step 3: Build the Quarto site
-      - name: Build Quarto site
-        run: |
-          quarto render
-
-      # Step 4: Check if resources.html exists in docs/
+      # Step 2: Check if docs/resources.html exists
       - name: Verify resources.html
         run: |
           if [ ! -f docs/resources.html ]; then
@@ -33,17 +22,17 @@ jobs:
             exit 1
           fi
 
-      # Step 5: Inject the password into resources.html
+      # Step 3: Inject the password into resources.html
       - name: Inject the password
         run: |
           sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" docs/resources.html
 
-      # Step 6: List files in docs/ for debugging
-      - name: List files
+      # Step 4: Check docs directory before deployment
+      - name: Check docs directory
         run: |
           ls -R docs
 
-      # Step 7: Deploy to GitHub Pages
+      # Step 5: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

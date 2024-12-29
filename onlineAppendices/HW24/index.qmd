@@ -1,0 +1,7 @@
+---
+title: "An essay of hybrid working"
+author: "Jeff Wu"
+date: "2024-12-17"
+categories: [thesis]
+image: "image.jpg"
+---

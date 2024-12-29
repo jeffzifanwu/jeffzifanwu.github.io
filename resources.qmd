@@ -1,0 +1,74 @@
+---
+title: "My learning resources"
+format: html
+page-layout: full
+title-block-banner: true
+---
+
+# Microeconomics
+
+Jonathan Gruber (2018): **Principles of Microeconomics**
+
+-   [5. Production theory](https://www.youtube.com/watch?v=ftmvsahQ6Wo&t=587s&ab_channel=MITOpenCourseWare)
+
+::: {.callout-note collapse="true"}
+## Details
+
+-   **\[9:20\]** Marginal product of labour; **\[18:13\]** Marginal rate of technical substitution; **\[25:03\]** Return to scale; **\[31:39\]** Productivity.
+-   "The diminishing marginal product of labour arises from the notion of short-run production constraints, where capital remains fixed."
+:::
+
+-   [6. Costs](https://www.youtube.com/watch?v=TSYNHb6YBEE&ab_channel=MITOpenCourseWare)
+
+Pollak and Wales (1992): **Demand system specification & estimation**
+
+-   Chapter 1: Linear Expenditure System (LES)
+
+-   Chapter 3: Demographic translating
+
+# Statistics, econometrics, data science
+
+Paul Sweeting (2023): **Copluas**
+
+-   [5 - Working with copulas in R](https://www.youtube.com/watch?v=XZcoA1rGbgE&ab_channel=PaulSweeting "The author's YouTube video.")
+
+-   [3.1 - Choosing a copula](https://www.youtube.com/watch?v=XZcoA1rGbgE&ab_channel=PaulSweeting "The author's YouTube video.")
+
+-   [2 - After the basics](https://www.youtube.com/watch?v=gzUxg0OUHU4&list=PLNt9IHkgoaro2jbfyd7QMa_FzL2vstco5&index=2&ab_channel=PaulSweeting "The author's YouTube video.")
+
+::: {.callout-note collapse="true"}
+## Details
+
+-   **14:14** From marginal distributions to a copula distribution
+-   **18:28** Building a normal copula by hand
+:::
+
+Andreas Tilevik, 2021, [Generalised linear models (GLMs)](https://www.tilestats.com/videos/%7D)
+
+-   [Quasi-Poisson, negative binomial](https://www.youtube.com/watch?v=jnKDQtDy0Bg&list=PLLTSM0eKjC2cYVUoex9WZpTEYyvw5buRc&index=13&ab_channel=TileStats)
+
+Matt Masten, 2015, Duke University Social Science Research Institute: [Causal Inference Bootcamp](https://mattmasten.github.io/bootcamp/)
+
+-   Ch1: Average, unit level, conditional average treatment effects
+
+-   Ch3: Average treatment effects on the treated
+
+Gavin Simpson, 2020, [Generalised additive models (GAM) with R and mgcv](https://www.youtube.com/watch?v=sgw4cu8hrZM&ab_channel=BottomoftheHeap)
+
+-   Model (over-)fitting: Penalised log-likelihood
+
+-   Smoothing: Basis functions, splines, interactions
+
+# Estimation
+
+Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems
+
+-   [Lecture 8: Non-linear parameter estimation - part 1](https://www.youtube.com/watch?v=X-vgLZmtZV0&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=9&ab_channel=MadhurBehl)
+
+-   [Lecture 9: Non-linear parameter estimation - part 2](https://www.youtube.com/watch?v=6U2LFQkdKWk&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=10&ab_channel=MadhurBehl)
+
+# Control theory, system theory, optimisation
+
+Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems
+
+-   [Lecture 2: State-space modelling](https://www.youtube.com/watch?v=WvBYRkkpEa0&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=4&ab_channel=MadhurBehl)

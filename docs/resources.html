@@ -139,6 +139,14 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<script>
+    const password = "PLACEHOLDER_PASSWORD"; // Replace with your desired password
+    const userInput = prompt("Password:");
+
+    if (userInput !== password) {
+        document.body.innerHTML = "<h1>Access Denied</h1><p>You do not have the correct password to access this page.</p>";
+    }
+</script>
 <section id="microeconomics" class="level1">
 <h1>Microeconomics</h1>
 <p>Jonathan Gruber (2018): <strong>Principles of Microeconomics</strong></p>

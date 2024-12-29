@@ -5,6 +5,17 @@ page-layout: full
 title-block-banner: true
 ---
 
+```{=html}
+<script>
+    const password = "PLACEHOLDER_PASSWORD"; // Replace with your desired password
+    const userInput = prompt("Password:");
+
+    if (userInput !== password) {
+        document.body.innerHTML = "<h1>Access Denied</h1><p>You do not have the correct password to access this page.</p>";
+    }
+</script>
+```
+
 # Microeconomics
 
 Jonathan Gruber (2018): **Principles of Microeconomics**

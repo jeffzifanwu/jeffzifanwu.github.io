@@ -7,12 +7,27 @@ title-block-banner: true
 
 ```{=html}
 <script>
-    const password = "PLACEHOLDER_PASSWORD"; // Replace with your desired password
+    // Encrypted password
+    const passwordHash = "aea5a5ee6792fab36f3c60e62ef64e40061a8dac7d868b359aff7a4786a32e51";
+
+    // Prompt user for the password
     const userInput = prompt("Password:");
 
-    if (userInput !== password) {
-        document.body.innerHTML = "<h1>Access Denied</h1><p>You do not have the correct password to access this page.</p>";
+    // Function to hash the user input
+    async function hashInput(input) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
     }
+
+    // Verify the password
+    hashInput(userInput).then(inputHash => {
+        if (inputHash !== passwordHash) {
+            document.body.innerHTML = "<h1>Access Denied</h1><p>You do not have the correct password to access this page.</p>";
+        }
+    });
 </script>
 ```
 

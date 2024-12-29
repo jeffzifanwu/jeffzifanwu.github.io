@@ -1,0 +1,32 @@
+name: Deploy Site
+
+on:
+  push:
+    branches:
+      - main  # Replace with the branch you use to deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Render the Quarto site
+      - name: Build Quarto site
+        run: |
+          quarto render
+
+      # Step 3: Replace the placeholder with the real password
+      - name: Inject the password into resources.html
+        run: |
+          sed -i "s/PLACEHOLDER_PASSWORD/${{ secrets.PAGE_PASSWORD }}/g" _site/resources.html
+
+      # Step 4: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _site

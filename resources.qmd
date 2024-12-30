@@ -3,6 +3,7 @@ title: "My learning resources"
 format: html
 page-layout: full
 title-block-banner: true
+bibliography: references.bib
 ---
 
 ```{=html}
@@ -40,13 +41,23 @@ Jonathan Gruber (2018): **Principles of Microeconomics**
 ::: {.callout-note collapse="true"}
 ## Details
 
--   **\[9:20\]** Marginal product of labour; **\[18:13\]** Marginal rate of technical substitution; **\[25:03\]** Return to scale; **\[31:39\]** Productivity.
+-   **\[9:20\]** Marginal production of labour; **\[18:13\]** Marginal rate of technical substitution; **\[25:03\]** Return to scale; **\[31:39\]** Productivity.
 -   "The diminishing marginal product of labour arises from the notion of short-run production constraints, where capital remains fixed."
 :::
 
 -   [6. Costs](https://www.youtube.com/watch?v=TSYNHb6YBEE&ab_channel=MITOpenCourseWare)
 
-Pollak and Wales (1992): **Demand system specification & estimation**
+::: {.callout-note collapse="true"}
+## Details
+
+\[**9:13**\] Cost function, marginal cost of production, \[**41:00**\] Long-run cost curve (expansion path)
+
+-   \[**13:40**\] The marginal cost of production is related to the marginal production of labour through the wage rate.
+-   \[**32:55**\] The cost function is derived from a production function, labour costs, and capital costs.
+-   \[**44:50**\] Both the long-run and short-run cost curves are u-shape (see explanations and examples in @Varian2024, chapter 22)
+:::
+
+@Pollak1992: **Demand system specification & estimation**
 
 -   Chapter 1: Linear Expenditure System (LES)
 

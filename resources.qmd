@@ -63,7 +63,7 @@ Jonathan Gruber (2018): **Principles of Microeconomics**
 
 -   Chapter 3: Demographic translating
 
-# Statistics, econometrics, data science
+# Statistical modelling & econometrics
 
 Paul Sweeting (2023): **Copluas**
 
@@ -84,28 +84,57 @@ Andreas Tilevik, 2021, [Generalised linear models (GLMs)](https://www.tilestats.
 
 -   [Quasi-Poisson, negative binomial](https://www.youtube.com/watch?v=jnKDQtDy0Bg&list=PLLTSM0eKjC2cYVUoex9WZpTEYyvw5buRc&index=13&ab_channel=TileStats)
 
-Matt Masten, 2015, Duke University Social Science Research Institute: [Causal Inference Bootcamp](https://mattmasten.github.io/bootcamp/)
-
--   Ch1: Average, unit level, conditional average treatment effects
-
--   Ch3: Average treatment effects on the treated
-
 Gavin Simpson, 2020, [Generalised additive models (GAM) with R and mgcv](https://www.youtube.com/watch?v=sgw4cu8hrZM&ab_channel=BottomoftheHeap)
 
 -   Model (over-)fitting: Penalised log-likelihood
 
 -   Smoothing: Basis functions, splines, interactions
 
+# Causal inference
+
+Sant'Anna (2023), UMISR:
+
+-   [Part 2](https://www.youtube.com/watch?v=R5dTf3n-_Rg&ab_channel=UMISR)
+
+::: callout-note
+\[**13:06**\] From "brute force" DiD estimator to TWFE estimator
+
+\[**41:10**\] Parallel trends for different transformation of the outcome variable
+:::
+
+-   [Part 3](https://www.youtube.com/watch?v=mu9zRs7fUbk&ab_channel=UMISR)
+
+::: callout-note
+The interpretation of TWFE estimator when treatment effects are heterogeneous.
+
+\[**30:30**\] Bacon-decomposition of a TWFE estimator.
+:::
+
+Huntington-Klein (2022), [Staggered DiD: Addressing tension between the DiD concept and two-way fixed effects specification.](https://www.youtube.com/watch?v=hu2nDbnpALA&ab_channel=Econometrics%2CCausality%2CandCodingwithDr.HK)
+
+::: {.callout-note collapse="true"}
+Also refer to Alagoz (2023), [Staggered Difference-in-Differences in Practice](https://www.youtube.com/watch?v=rkP4TK1SPVQ&ab_channel=PyData), for a visual explanation.
+
+\[**9:45**\] Early treated, late treated, never treated groups.
+:::
+
+Matt Masten, 2015, Duke University Social Science Research Institute: [Causal Inference Bootcamp](https://mattmasten.github.io/bootcamp/)
+
+::: {.callout-note collapse="true"}
+-   Ch1: Average, unit level, conditional average treatment effects
+-   Ch3: Average treatment effects on the treated
+:::
+
 # Estimation
 
-Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems
+Madhur Behl (2020), **Principles of Modeling for Cyber-Physical Systems**
 
 -   [Lecture 8: Non-linear parameter estimation - part 1](https://www.youtube.com/watch?v=X-vgLZmtZV0&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=9&ab_channel=MadhurBehl)
 
 -   [Lecture 9: Non-linear parameter estimation - part 2](https://www.youtube.com/watch?v=6U2LFQkdKWk&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=10&ab_channel=MadhurBehl)
 
-# Control theory, system theory, optimisation
+# Optimisation, system, control
 
-Madhur Behl (2020), Principles of Modeling for Cyber-Physical Systems
+Madhur Behl (2020), **Principles of Modeling for Cyber-Physical Systems**
 
 -   [Lecture 2: State-space modelling](https://www.youtube.com/watch?v=WvBYRkkpEa0&list=PL868twsx7OjeewCLEd-wcWnM63mOwqgTr&index=4&ab_channel=MadhurBehl)

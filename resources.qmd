@@ -34,36 +34,53 @@ bibliography: references.bib
 
 # Microeconomics
 
+@Varian2024: **Intermediate Microeconomics: A Modern Approach**
+
+-   Chapter 5: Choices
+
+    -   5.3 & 5.4 Demand functions and properties for Cobb-Douglas preferences
+
 Jonathan Gruber (2018): **Principles of Microeconomics**
 
--   [5. Production theory](https://www.youtube.com/watch?v=ftmvsahQ6Wo&t=587s&ab_channel=MITOpenCourseWare)
+::: panel-tabset
+## 5. Production theory
 
-::: {.callout-note collapse="true"}
-## Details
+[5. Production theory](https://www.youtube.com/watch?v=ftmvsahQ6Wo&t=587s&ab_channel=MITOpenCourseWare)
 
--   **\[9:20\]** Marginal production of labour; **\[18:13\]** Marginal rate of technical substitution; **\[25:03\]** Return to scale; **\[31:39\]** Productivity.
+\[9:20\] Marginal production of labour
+
 -   "The diminishing marginal product of labour arises from the notion of short-run production constraints, where capital remains fixed."
-:::
 
--   [6. Costs](https://www.youtube.com/watch?v=TSYNHb6YBEE&ab_channel=MITOpenCourseWare)
+\[18:13\] Marginal rate of technical substitution; \[25:03\] Return to scale; \[31:39\] Productivity.
 
-::: {.callout-note collapse="true"}
-## Details
+## 6. Costs
 
-\[**9:13**\] Cost function, marginal cost of production, \[**41:00**\] Long-run cost curve (expansion path)
+\[9:13\] Cost function, marginal cost of production, \[41:00\] Long-run cost curve (expansion path)
 
--   \[**13:40**\] The marginal cost of production is related to the marginal production of labour through the wage rate.
--   \[**32:55**\] The cost function is derived from a production function, labour costs, and capital costs.
--   \[**44:50**\] Both the long-run and short-run cost curves are u-shape (see explanations and examples in @Varian2024, chapter 22)
+-   \[13:40\] The marginal cost of production is related to the marginal production of labour through the wage rate.
+-   \[32:55\] The cost function is derived from a production function, labour costs, and capital costs.
+-   \[44:50\] Both the long-run and short-run cost curves are u-shape (see explanations and examples in @Varian2024, chapter 22)
 :::
 
 @Pollak1992: **Demand system specification & estimation**
 
 -   Chapter 1: Linear Expenditure System (LES)
-
+-   Chapter 2: Functional form specification
+    -   2.1.1 Expenditure proportionality
+    -   2.1.2 Demand systems linear in expenditure
 -   Chapter 3: Demographic translating
 
+------------------------------------------------------------------------
+
 # Statistical modelling & econometrics
+
+@Train2009: **Discrete Choice Methods with Simulation**
+
+-   Chapter 2: Properties of discrete choice models
+    -   2.3 Derivation of choice properties
+-   Chapter 3: Logit
+-   Chapter 4: GEV
+-   Chapter 5: Probit
 
 Paul Sweeting (2023): **Copluas**
 
@@ -73,12 +90,8 @@ Paul Sweeting (2023): **Copluas**
 
 -   [2 - After the basics](https://www.youtube.com/watch?v=gzUxg0OUHU4&list=PLNt9IHkgoaro2jbfyd7QMa_FzL2vstco5&index=2&ab_channel=PaulSweeting "The author's YouTube video.")
 
-::: {.callout-note collapse="true"}
-## Details
-
--   **14:14** From marginal distributions to a copula distribution
--   **18:28** Building a normal copula by hand
-:::
+    -   \[14:14\] From marginal distributions to a copula distribution
+    -   \[18:28\] Building a normal copula by hand
 
 Andreas Tilevik, 2021, [Generalised linear models (GLMs)](https://www.tilestats.com/videos/%7D)
 
@@ -90,40 +103,29 @@ Gavin Simpson, 2020, [Generalised additive models (GAM) with R and mgcv](https:/
 
 -   Smoothing: Basis functions, splines, interactions
 
+------------------------------------------------------------------------
+
 # Causal inference
 
-Sant'Anna (2023), UMISR:
+Sant'Anna (2023), UMISR **Difference-in-differences**:
 
 -   [Part 2](https://www.youtube.com/watch?v=R5dTf3n-_Rg&ab_channel=UMISR)
-
-::: callout-note
-\[**13:06**\] From "brute force" DiD estimator to TWFE estimator
-
-\[**41:10**\] Parallel trends for different transformation of the outcome variable
-:::
-
--   [Part 3](https://www.youtube.com/watch?v=mu9zRs7fUbk&ab_channel=UMISR)
-
-::: callout-note
-The interpretation of TWFE estimator when treatment effects are heterogeneous.
-
-\[**30:30**\] Bacon-decomposition of a TWFE estimator.
-:::
+    -   \[14:14\] From marginal distributions to a copula distribution
+    -   \[18:28\] Building a normal copula by hand
+-   [Part 3](https://www.youtube.com/watch?v=mu9zRs7fUbk&ab_channel=UMISR): The interpretation of TWFE estimator when treatment effects are heterogeneous.
+    -   \[30:30\] Bacon-decomposition of a TWFE estimator
 
 Huntington-Klein (2022), [Staggered DiD: Addressing tension between the DiD concept and two-way fixed effects specification.](https://www.youtube.com/watch?v=hu2nDbnpALA&ab_channel=Econometrics%2CCausality%2CandCodingwithDr.HK)
 
-::: {.callout-note collapse="true"}
-Also refer to Alagoz (2023), [Staggered Difference-in-Differences in Practice](https://www.youtube.com/watch?v=rkP4TK1SPVQ&ab_channel=PyData), for a visual explanation.
-
-\[**9:45**\] Early treated, late treated, never treated groups.
-:::
+-   Also refer to Alagoz (2023), [Staggered Difference-in-Differences in Practice](https://www.youtube.com/watch?v=rkP4TK1SPVQ&ab_channel=PyData), for a visual explanation.
+-   \[9:45\] Early treated, late treated, never treated groups.
 
 Matt Masten, 2015, Duke University Social Science Research Institute: [Causal Inference Bootcamp](https://mattmasten.github.io/bootcamp/)
 
-::: {.callout-note collapse="true"}
 -   Ch1: Average, unit level, conditional average treatment effects
 -   Ch3: Average treatment effects on the treated
-:::
+
+------------------------------------------------------------------------
 
 # Estimation
 

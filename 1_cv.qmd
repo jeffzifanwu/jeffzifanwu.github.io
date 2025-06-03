@@ -1,0 +1,6 @@
+---
+title: "CV"
+format: html
+page-layout: full
+title-block-banner: true
+---

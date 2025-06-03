@@ -10,13 +10,13 @@ website:
       # - text: "Home"
       #   file: index.qmd
       - text: "Appendices"
-        file: onlineAppendices.qmd
+        file: 4_onlineAppendices.qmd
       - text: "Portfolio"
-        file: portfolio.qmd
+        file: 3_portfolio.qmd
       - text: "Software"
-        file: software.qmd
-      - text: "Resources"
-        file: resources.qmd
+        file: 2_software.qmd
+      - text: "CV"
+        file: 1_cv.qmd
     # right:
     #   - about.qmd
       # - icon: github

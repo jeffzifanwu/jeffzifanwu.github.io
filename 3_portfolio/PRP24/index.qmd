@@ -1,0 +1,9 @@
+---
+title: "Diagnosing and addressing collinear issues with proportion predictors"
+author: "Jeff Wu"
+date: "2024-12-17"
+categories: [econometrics & statistical modelling]
+image: "image.png"
+---
+
+[Numerical experiments](Collinearity%20with%20Proportion%20Predictors.html)

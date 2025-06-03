@@ -1,0 +1,14 @@
+---
+title: "Comparing OLS and SUR methods in two settings"
+author: "Jeff Wu"
+date: "2024-10-01"
+categories: [econometrics & statistical modelling]
+image: "image.png"
+---
+
+The settings are:
+
+(1) Linear regression with panel data;
+(2) System of linear equations with cross-sectional or longitudinal data.
+
+[Numerical experiments](compareOlsAndSur-20240825.html)

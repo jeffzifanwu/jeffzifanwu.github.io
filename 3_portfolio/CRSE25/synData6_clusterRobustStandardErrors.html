@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cluster-robust standard error</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="synData6_clusterRobustStandardErrors_files/libs/clipboard/clipboard.min.js"></script>
+<script src="synData6_clusterRobustStandardErrors_files/libs/quarto-html/quarto.js"></script>
+<script src="synData6_clusterRobustStandardErrors_files/libs/quarto-html/popper.min.js"></script>
+<script src="synData6_clusterRobustStandardErrors_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="synData6_clusterRobustStandardErrors_files/libs/quarto-html/anchor.min.js"></script>
+<link href="synData6_clusterRobustStandardErrors_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="synData6_clusterRobustStandardErrors_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="synData6_clusterRobustStandardErrors_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="synData6_clusterRobustStandardErrors_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="synData6_clusterRobustStandardErrors_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Cluster-robust standard error</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>In a recent project (LTN25), I worked with a dataset comprising daily traffic counts at various sites across a borough, collected in two waves. The first wave was gathered in November 2021, and the second in November 2023. Each wave includes seven consecutive days of traffic counts for all sites. Between the two waves, the borough implemented three Low Traffic Neighbourhood (LTN) schemes, which affected traffic volumes at some of these sites. We employed a difference-in-differences (DiD) approach to analyse the policy’s impact and fitted a two-way fixed effects (TWFE) model to the traffic data to estimate the treatment effect on the treated (referred to as the treatment effect hereafter for simplicity).</p>
+<p>This dataset violates key assumptions of the TWFE model, particularly the requirement for independent and identically distributed (i.i.d.) error terms. Correlation arises because traffic counts at the same sites are repeatedly measured over consecutive days. For example, if engineering works occurred near a site during one measurement wave, all traffic counts at that site during the same wave could be suppressed. Since the model does not include a fixed effect for the occurrence of engineering works, the relevant effects manifest as correlated residuals (error terms).</p>
+<p>This post examines how such repeated measurements impact TWFE estimation and explores cluster-robust standard errors as a solution to address these issues.</p>
+</section>
+<section id="twfe" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> TWFE</h1>
+<section id="data-generating-process" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="data-generating-process"><span class="header-section-number">2.1</span> Data generating process</h2>
+<p>The general TWFE model is given by:</p>
+<p><span class="math display">\[
+y_{i,t}
+= \alpha^{base}
++ \alpha^{site}_{i}
++ \alpha^{time}_{t}
++ D_{i,t} \beta
++ \epsilon_{i,t}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(y_{i,t}\)</span> is the outcome variable for individual <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>;</li>
+<li><span class="math inline">\(\alpha^{base}\)</span> is the base effect;</li>
+<li><span class="math inline">\(\alpha^{site}_{i}\)</span> is the site fixed effect;</li>
+<li><span class="math inline">\(\alpha^{time}_{t}\)</span> is the time fixed effect;</li>
+<li><span class="math inline">\(D_{i,t}\)</span> is the treatment indicator (1 if site <span class="math inline">\(i\)</span> is treated at time <span class="math inline">\(t\)</span>, 0 otherwise);</li>
+<li><span class="math inline">\(\beta\)</span> is the treatment effect;</li>
+<li><span class="math inline">\(\epsilon_{i,t}\)</span> is the error term, assumed to be i.i.d.normal.</li>
+</ul>
+<p>We now specify a data generating process for a panel data composed of 30 sites and 28 time periods. The sites are indexed by <span class="math inline">\(i = 1, \ldots, 30\)</span> and the time periods by <span class="math inline">\(t = 1, \ldots, 28\)</span>. The outcome variable <span class="math inline">\(y_{i,t}\)</span> denotes the traffic volume at site <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>. The frist 20 sites are assigned to treatment group and the rest to the control group. The treatment is applied at time <span class="math inline">\(t = 15\)</span> for the treated sites, and the control sites are never treated. So, the treatment indicator <span class="math inline">\(D_{i,t}\)</span> is defined as follows:</p>
+<p><span class="math display">\[
+D_{i,t} =
+\begin{cases}
+1 &amp; \text{if } i \leq 20 \text{ and } t \geq 15, \\
+0 &amp; \text{otherwise}.
+\end{cases}
+\]</span></p>
+<p>The parameters are specified as follows:</p>
+<ul>
+<li><span class="math inline">\(\alpha^{base} = 100\)</span>;</li>
+<li><span class="math inline">\(\alpha^{site}_{i} = i\)</span> for <span class="math inline">\(i = 1, \ldots, 30\)</span> (i.e., the site fixed effects are simply the site indices);</li>
+<li><span class="math inline">\(\alpha^{time}_{t} = -20\)</span> when <span class="math inline">\(t\)</span> is a multiple of seven (i.e., <span class="math inline">\(t = 7, 14, 21, 28\)</span>) and <span class="math inline">\(0\)</span> otherwise;</li>
+<li><span class="math inline">\(\beta = 50\)</span></li>
+</ul>
+<p>Error term:</p>
+<p><span class="math display">\[
+\epsilon_{i,t} \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 10)
+\]</span></p>
+<section id="simulation" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="simulation"><span class="header-section-number">2.1.1</span> Simulation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of sites (clusters) and periods </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nSite   <span class="ot">=</span> <span class="dv">30</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>nPeriod <span class="ot">=</span> <span class="dv">28</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Ids</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> <span class="fu">genDimIds</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimSize =</span> <span class="fu">c</span>(nSite, nPeriod)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  , <span class="at">dimName =</span> <span class="fu">c</span>(<span class="st">"site_id"</span>, <span class="st">"period_id"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate individual error terms</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>df.tc<span class="sc">$</span>indivdu_err <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df.tc), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate site fixed effects</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>df.siteEffect <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">site_id =</span> <span class="dv">1</span><span class="sc">:</span>nSite) <span class="sc">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># site fiexed effect equal to its site id</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">site_fixed_effect =</span> site_id)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.siteEffect, <span class="at">by =</span> <span class="st">"site_id"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate period fixed effects</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(period_id) <span class="sc">%&gt;%</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Period id is a Multiple of 7: -20, otherwise 0</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">period_fixed_effect =</span> <span class="fu">ifelse</span>(period_id <span class="sc">%%</span> <span class="dv">7</span> <span class="sc">==</span> <span class="dv">0</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">0</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate base traffic</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df.tc<span class="sc">$</span>base <span class="ot">=</span> <span class="dv">100</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># - - - - - - - - - - - - - - - - </span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate treatmnent effects</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># - - - - - - - - - - - - - - - -</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Label treatment group  </span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2/3 are in treatment group, 1/3 in control group</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment_group =</span> <span class="fu">if_else</span>(site_id <span class="sc">&lt;=</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span><span class="sc">*</span>nSite, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate post policy indicator</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># policy implemented after the 14th period</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post_policy =</span> <span class="fu">if_else</span>(period_id <span class="sc">&gt;</span> <span class="dv">14</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>))</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Label treated units: in treatment group and post policy</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_treated =</span> <span class="fu">if_else</span>(treatment_group <span class="sc">&amp;</span> post_policy, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate treatment effects</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment_effect =</span> is_treated<span class="sc">*</span>(<span class="sc">-</span><span class="dv">50</span>))</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co"># - - - - - - - - - - - - - - - -</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate outcome</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y =</span> base <span class="sc">+</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>           site_fixed_effect <span class="sc">+</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>           period_fixed_effect <span class="sc">+</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>           treatment_effect <span class="sc">+</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>           indivdu_err </span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df.tc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 840 × 11
+   site_id period_id indivdu_err site_fixed_effect period_fixed_effect  base
+     &lt;int&gt;     &lt;int&gt;       &lt;dbl&gt;             &lt;int&gt;               &lt;dbl&gt; &lt;dbl&gt;
+ 1       1         1      -5.60                  1                   0   100
+ 2       1         2      -2.30                  1                   0   100
+ 3       1         3      15.6                   1                   0   100
+ 4       1         4       0.705                 1                   0   100
+ 5       1         5       1.29                  1                   0   100
+ 6       1         6      17.2                   1                   0   100
+ 7       1         7       4.61                  1                 -20   100
+ 8       1         8     -12.7                   1                   0   100
+ 9       1         9      -6.87                  1                   0   100
+10       1        10      -4.46                  1                   0   100
+# ℹ 830 more rows
+# ℹ 5 more variables: treatment_group &lt;lgl&gt;, post_policy &lt;lgl&gt;,
+#   is_treated &lt;dbl&gt;, treatment_effect &lt;dbl&gt;, y &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-estTwfe" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="sec-estTwfe"><span class="header-section-number">2.1.2</span> Estimation</h3>
+<p>OLS estimation is used to recover the parameters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimation</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(is_treated) <span class="sc">+</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(site_id) <span class="sc">+</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(period_id)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>         , <span class="at">data =</span> df.tc)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ as.factor(is_treated) + as.factor(site_id) + 
+    as.factor(period_id), data = df.tc)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-25.64  -6.36   0.17   6.43  34.82 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(&gt;|t|)    
+(Intercept)             97.9861     2.5498   38.43 &lt; 0.0000000000000002 ***
+as.factor(is_treated)1 -51.7014     1.4266  -36.24 &lt; 0.0000000000000002 ***
+as.factor(site_id)2      3.7211     2.6047    1.43               0.1535    
+as.factor(site_id)3      1.7039     2.6047    0.65               0.5132    
+as.factor(site_id)4      4.5857     2.6047    1.76               0.0787 .  
+as.factor(site_id)5      3.1072     2.6047    1.19               0.2333    
+as.factor(site_id)6      5.0288     2.6047    1.93               0.0539 .  
+as.factor(site_id)7      6.9372     2.6047    2.66               0.0079 ** 
+as.factor(site_id)8      7.7617     2.6047    2.98               0.0030 ** 
+as.factor(site_id)9      6.9693     2.6047    2.68               0.0076 ** 
+as.factor(site_id)10    11.5143     2.6047    4.42   0.0000112344547731 ***
+as.factor(site_id)11    11.4502     2.6047    4.40   0.0000125515128375 ***
+as.factor(site_id)12    13.8289     2.6047    5.31   0.0000001435626556 ***
+as.factor(site_id)13    12.3525     2.6047    4.74   0.0000025098586402 ***
+as.factor(site_id)14    12.2792     2.6047    4.71   0.0000028717671101 ***
+as.factor(site_id)15    12.8325     2.6047    4.93   0.0000010210945853 ***
+as.factor(site_id)16    17.2059     2.6047    6.61   0.0000000000730792 ***
+as.factor(site_id)17    17.7063     2.6047    6.80   0.0000000000210726 ***
+as.factor(site_id)18    20.0853     2.6047    7.71   0.0000000000000379 ***
+as.factor(site_id)19    17.5409     2.6047    6.73   0.0000000000318955 ***
+as.factor(site_id)20    21.0417     2.6047    8.08   0.0000000000000025 ***
+as.factor(site_id)21    18.4157     2.7006    6.82   0.0000000000183297 ***
+as.factor(site_id)22    18.2619     2.7006    6.76   0.0000000000266111 ***
+as.factor(site_id)23    20.0514     2.7006    7.42   0.0000000000002956 ***
+as.factor(site_id)24    23.8675     2.7006    8.84 &lt; 0.0000000000000002 ***
+as.factor(site_id)25    20.4691     2.7006    7.58   0.0000000000000983 ***
+as.factor(site_id)26    24.2123     2.7006    8.97 &lt; 0.0000000000000002 ***
+as.factor(site_id)27    30.6308     2.7006   11.34 &lt; 0.0000000000000002 ***
+as.factor(site_id)28    27.2532     2.7006   10.09 &lt; 0.0000000000000002 ***
+as.factor(site_id)29    26.5579     2.7006    9.83 &lt; 0.0000000000000002 ***
+as.factor(site_id)30    27.0117     2.7006   10.00 &lt; 0.0000000000000002 ***
+as.factor(period_id)2    2.2260     2.5164    0.88               0.3766    
+as.factor(period_id)3    3.2944     2.5164    1.31               0.1909    
+as.factor(period_id)4    2.6768     2.5164    1.06               0.2878    
+as.factor(period_id)5    1.6592     2.5164    0.66               0.5099    
+as.factor(period_id)6    5.9749     2.5164    2.37               0.0178 *  
+as.factor(period_id)7  -15.1277     2.5164   -6.01   0.0000000028150113 ***
+as.factor(period_id)8   -0.9153     2.5164   -0.36               0.7162    
+as.factor(period_id)9    4.1285     2.5164    1.64               0.1013    
+as.factor(period_id)10   0.1177     2.5164    0.05               0.9627    
+as.factor(period_id)11   6.0645     2.5164    2.41               0.0162 *  
+as.factor(period_id)12   1.6785     2.5164    0.67               0.5049    
+as.factor(period_id)13   6.2361     2.5164    2.48               0.0134 *  
+as.factor(period_id)14 -14.8816     2.5164   -5.91   0.0000000049904298 ***
+as.factor(period_id)15   3.3119     2.6901    1.23               0.2186    
+as.factor(period_id)16   1.8688     2.6901    0.69               0.4875    
+as.factor(period_id)17   6.9587     2.6901    2.59               0.0099 ** 
+as.factor(period_id)18   0.0194     2.6901    0.01               0.9942    
+as.factor(period_id)19   5.6279     2.6901    2.09               0.0368 *  
+as.factor(period_id)20   5.0215     2.6901    1.87               0.0623 .  
+as.factor(period_id)21 -14.7029     2.6901   -5.47   0.0000000620895476 ***
+as.factor(period_id)22   3.4110     2.6901    1.27               0.2052    
+as.factor(period_id)23   3.3967     2.6901    1.26               0.2071    
+as.factor(period_id)24   2.2731     2.6901    0.84               0.3984    
+as.factor(period_id)25   1.1951     2.6901    0.44               0.6570    
+as.factor(period_id)26   5.4239     2.6901    2.02               0.0441 *  
+as.factor(period_id)27   4.3998     2.6901    1.64               0.1023    
+as.factor(period_id)28 -18.4159     2.6901   -6.85   0.0000000000153820 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 9.8 on 782 degrees of freedom
+Multiple R-squared:  0.906, Adjusted R-squared:   0.9 
+F-statistic:  133 on 57 and 782 DF,  p-value: &lt;0.0000000000000002</code></pre>
+</div>
+</div>
+<p>OLS recovers the true parameters with reasonably high precision.</p>
+<p>We call four diagnostic plots for the estimated model. The aim is not to check whether the model satisfies the OLS assumptions—we already know it does, as the data was simulated to meet these conditions. Instead, we use these plots to illustrate how diagnostic plots appear when the model is correctly specified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-4-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sec-twfeCorrelated" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> TWFE with correlated errors</h1>
+<section id="data-generating-process-1" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="data-generating-process-1"><span class="header-section-number">3.1</span> Data generating process</h2>
+<p>The general TWFE model is given by:</p>
+<p><span class="math display">\[
+y_{i,t}
+= \alpha^{base}
++ \alpha^{site}_{i}
++ \alpha^{time}_{t}
++ D_{i,t} \beta
++ \epsilon^{cluster}_{c}
++ \epsilon^{individ}_{i,t}
+\]</span></p>
+<p>where: - <span class="math inline">\(\epsilon^{cluster}_{c}\)</span> is the cluster-level error term, assumed to be i.i.d. normal across clusters; - <span class="math inline">\(\epsilon^{individ}_{i,t}\)</span> is the individual-level error term, assumed to be i.i.d. normal across sites and time.</p>
+<p>We now specify 60 clusters for this dataset. The sample points of each site are assigned to two clusters depending on whether are collected before or after the treatment. The clusters are indexed by <span class="math inline">\(c = 1, \ldots, 60\)</span>.</p>
+<p>The error terms are specified as follows:</p>
+<p><span class="math display">\[
+\begin{align}
+&amp; \epsilon^{cluster}_{c} \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 10)
+\\
+&amp; \epsilon^{individ}_{i,t} \overset{\text{i.i.d.}}{\sim} \mathcal{N}(0, 10)
+\end{align}
+\]</span></p>
+<section id="simulation-1" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="simulation-1"><span class="header-section-number">3.1.1</span> Simulation</h3>
+<p>We simulate the data based on the above specifications.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate cluster Ids</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df.cluster <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, post_policy) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(site_id, post_policy) <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster_id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster_err=</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(.), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.cluster, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"site_id"</span>, <span class="st">"post_policy"</span>))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate outcome </span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y =</span> base <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>           site_fixed_effect <span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>           period_fixed_effect <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>           treatment_effect <span class="sc">+</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>           cluster_err <span class="sc">+</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>           indivdu_err </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df.tc <span class="sc">%&gt;%</span> <span class="fu">select</span>(site_id, period_id, cluster_id, cluster_err, y))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 840 × 5
+   site_id period_id cluster_id cluster_err     y
+     &lt;int&gt;     &lt;int&gt;      &lt;int&gt;       &lt;dbl&gt; &lt;dbl&gt;
+ 1       1         1          1       -7.59  87.8
+ 2       1         2          1       -7.59  91.1
+ 3       1         3          1       -7.59 109. 
+ 4       1         4          1       -7.59  94.1
+ 5       1         5          1       -7.59  94.7
+ 6       1         6          1       -7.59 111. 
+ 7       1         7          1       -7.59  78.0
+ 8       1         8          1       -7.59  80.8
+ 9       1         9          1       -7.59  86.5
+10       1        10          1       -7.59  88.9
+# ℹ 830 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="estimation-conventional-ols-standard-error" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="estimation-conventional-ols-standard-error"><span class="header-section-number">3.1.2</span> Estimation: conventional OLS standard error</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimation</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">=</span> <span class="fu">lm</span>(y <span class="sc">~</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(is_treated) <span class="sc">+</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(site_id) <span class="sc">+</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(period_id)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>         , <span class="at">data =</span> df.tc)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ as.factor(is_treated) + as.factor(site_id) + 
+    as.factor(period_id), data = df.tc)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-35.40  -8.57  -0.04   8.42  40.01 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(&gt;|t|)    
+(Intercept)             104.804      3.324   31.53 &lt; 0.0000000000000002 ***
+as.factor(is_treated)1  -50.164      1.860  -26.98 &lt; 0.0000000000000002 ***
+as.factor(site_id)2      -7.877      3.395   -2.32              0.02059 *  
+as.factor(site_id)3      -4.805      3.395   -1.42              0.15742    
+as.factor(site_id)4      -3.033      3.395   -0.89              0.37196    
+as.factor(site_id)5       1.409      3.395    0.42              0.67822    
+as.factor(site_id)6      -2.274      3.395   -0.67              0.50314    
+as.factor(site_id)7      -3.389      3.395   -1.00              0.31853    
+as.factor(site_id)8       6.721      3.395    1.98              0.04809 *  
+as.factor(site_id)9     -11.707      3.395   -3.45              0.00059 ***
+as.factor(site_id)10     10.739      3.395    3.16              0.00162 ** 
+as.factor(site_id)11      7.091      3.395    2.09              0.03706 *  
+as.factor(site_id)12     -7.076      3.395   -2.08              0.03747 *  
+as.factor(site_id)13     14.674      3.395    4.32   0.0000174466030538 ***
+as.factor(site_id)14     -0.994      3.395   -0.29              0.76978    
+as.factor(site_id)15      8.899      3.395    2.62              0.00893 ** 
+as.factor(site_id)16      2.601      3.395    0.77              0.44389    
+as.factor(site_id)17      7.099      3.395    2.09              0.03686 *  
+as.factor(site_id)18     27.630      3.395    8.14   0.0000000000000016 ***
+as.factor(site_id)19     21.118      3.395    6.22   0.0000000008082388 ***
+as.factor(site_id)20     16.987      3.395    5.00   0.0000006957718953 ***
+as.factor(site_id)21      7.083      3.520    2.01              0.04456 *  
+as.factor(site_id)22     14.582      3.520    4.14   0.0000380778921246 ***
+as.factor(site_id)23     16.186      3.520    4.60   0.0000049668162013 ***
+as.factor(site_id)24      6.796      3.520    1.93              0.05389 .  
+as.factor(site_id)25      9.764      3.520    2.77              0.00567 ** 
+as.factor(site_id)26     13.212      3.520    3.75              0.00019 ***
+as.factor(site_id)27     25.333      3.520    7.20   0.0000000000014478 ***
+as.factor(site_id)28     17.193      3.520    4.88   0.0000012596089982 ***
+as.factor(site_id)29     17.142      3.520    4.87   0.0000013512421302 ***
+as.factor(site_id)30     21.227      3.520    6.03   0.0000000025236203 ***
+as.factor(period_id)2     2.226      3.280    0.68              0.49755    
+as.factor(period_id)3     3.294      3.280    1.00              0.31549    
+as.factor(period_id)4     2.677      3.280    0.82              0.41469    
+as.factor(period_id)5     1.659      3.280    0.51              0.61309    
+as.factor(period_id)6     5.975      3.280    1.82              0.06889 .  
+as.factor(period_id)7   -15.128      3.280   -4.61   0.0000046538232685 ***
+as.factor(period_id)8    -0.915      3.280   -0.28              0.78028    
+as.factor(period_id)9     4.128      3.280    1.26              0.20851    
+as.factor(period_id)10    0.118      3.280    0.04              0.97138    
+as.factor(period_id)11    6.064      3.280    1.85              0.06484 .  
+as.factor(period_id)12    1.679      3.280    0.51              0.60897    
+as.factor(period_id)13    6.236      3.280    1.90              0.05763 .  
+as.factor(period_id)14  -14.882      3.280   -4.54   0.0000065969593444 ***
+as.factor(period_id)15    7.393      3.506    2.11              0.03530 *  
+as.factor(period_id)16    5.950      3.506    1.70              0.09010 .  
+as.factor(period_id)17   11.040      3.506    3.15              0.00170 ** 
+as.factor(period_id)18    4.101      3.506    1.17              0.24253    
+as.factor(period_id)19    9.709      3.506    2.77              0.00575 ** 
+as.factor(period_id)20    9.103      3.506    2.60              0.00961 ** 
+as.factor(period_id)21  -10.621      3.506   -3.03              0.00253 ** 
+as.factor(period_id)22    7.493      3.506    2.14              0.03292 *  
+as.factor(period_id)23    7.478      3.506    2.13              0.03326 *  
+as.factor(period_id)24    6.355      3.506    1.81              0.07033 .  
+as.factor(period_id)25    5.277      3.506    1.50              0.13276    
+as.factor(period_id)26    9.505      3.506    2.71              0.00686 ** 
+as.factor(period_id)27    8.481      3.506    2.42              0.01580 *  
+as.factor(period_id)28  -14.334      3.506   -4.09   0.0000479973340678 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 13 on 782 degrees of freedom
+Multiple R-squared:  0.835, Adjusted R-squared:  0.823 
+F-statistic: 69.2 on 57 and 782 DF,  p-value: &lt;0.0000000000000002</code></pre>
+</div>
+</div>
+<p>The estimation results immediately show:</p>
+<ol type="1">
+<li>The treatment effect is recovered. However, the standard error increases compared to the previous dataset (see <a href="#sec-estTwfe" class="quarto-xref">Section&nbsp;2.1.2</a>).</li>
+<li>The estimates of site and time fixed effects are not all reliable.</li>
+<li>The overall model fit (<span class="math inline">\(R^2\)</span>) declines relative to the previous dataset.</li>
+</ol>
+<p>In the following section, we analyse the residuals of the estimated model to illustrate violations of the OLS assumptions.</p>
+</section>
+<section id="diagnosis" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="diagnosis"><span class="header-section-number">3.1.3</span> Diagnosis</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-7-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These plots appear to acceptable, because the cluster-level errors are relatively small. We repeat the simulation, estimation, and diagnostic procedures for two additional datasets in which the standard deviations of the cluster-level error terms are increased to 30 and 50, respectively.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate cluster Ids</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df.cluster <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, post_policy) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(site_id, post_policy) <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster_id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster_err2=</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(.), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">30</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cluster_err3=</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(.), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">50</span>))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.cluster, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"site_id"</span>, <span class="st">"post_policy"</span>, <span class="st">"cluster_id"</span>))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate outcome </span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>df.tc <span class="ot">=</span> df.tc <span class="sc">%&gt;%</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y2 =</span> base <span class="sc">+</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>           site_fixed_effect <span class="sc">+</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>           period_fixed_effect <span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>           treatment_effect <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>           cluster_err2 <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>           indivdu_err </span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y3 =</span> base <span class="sc">+</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>           site_fixed_effect <span class="sc">+</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>           period_fixed_effect <span class="sc">+</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>           treatment_effect <span class="sc">+</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>           cluster_err3 <span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>           indivdu_err </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df.tc <span class="sc">%&gt;%</span> <span class="fu">select</span>(site_id, period_id, cluster_id</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  , cluster_err , y</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  , cluster_err2, y2</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  , cluster_err3, y3</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 840 × 9
+   site_id period_id cluster_id cluster_err     y cluster_err2    y2
+     &lt;int&gt;     &lt;int&gt;      &lt;int&gt;       &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;
+ 1       1         1          1       -7.59  87.8        -30.4  65.0
+ 2       1         2          1       -7.59  91.1        -30.4  68.3
+ 3       1         3          1       -7.59 109.         -30.4  86.2
+ 4       1         4          1       -7.59  94.1        -30.4  71.3
+ 5       1         5          1       -7.59  94.7        -30.4  71.9
+ 6       1         6          1       -7.59 111.         -30.4  87.7
+ 7       1         7          1       -7.59  78.0        -30.4  55.2
+ 8       1         8          1       -7.59  80.8        -30.4  57.9
+ 9       1         9          1       -7.59  86.5        -30.4  63.7
+10       1        10          1       -7.59  88.9        -30.4  66.1
+# ℹ 830 more rows
+# ℹ 2 more variables: cluster_err3 &lt;dbl&gt;, y3 &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate dataset 2</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mdl2 <span class="ot">=</span> <span class="fu">lm</span>(y2 <span class="sc">~</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(is_treated) <span class="sc">+</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(site_id) <span class="sc">+</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(period_id)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         , <span class="at">data =</span> df.tc)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y2 ~ as.factor(is_treated) + as.factor(site_id) + 
+    as.factor(period_id), data = df.tc)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-60.47 -16.77   0.26  16.78  69.02 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(&gt;|t|)    
+(Intercept)              78.155      6.349   12.31 &lt; 0.0000000000000002 ***
+as.factor(is_treated)1  -70.473      3.552  -19.84 &lt; 0.0000000000000002 ***
+as.factor(site_id)2      59.882      6.486    9.23 &lt; 0.0000000000000002 ***
+as.factor(site_id)3      35.686      6.486    5.50   0.0000000508225730 ***
+as.factor(site_id)4      43.327      6.486    6.68   0.0000000000452000 ***
+as.factor(site_id)5      38.614      6.486    5.95   0.0000000039569218 ***
+as.factor(site_id)6      52.963      6.486    8.17   0.0000000000000013 ***
+as.factor(site_id)7       8.833      6.486    1.36              0.17363    
+as.factor(site_id)8      60.140      6.486    9.27 &lt; 0.0000000000000002 ***
+as.factor(site_id)9      26.859      6.486    4.14   0.0000383049347834 ***
+as.factor(site_id)10     68.688      6.486   10.59 &lt; 0.0000000000000002 ***
+as.factor(site_id)11     29.139      6.486    4.49   0.0000080880665308 ***
+as.factor(site_id)12     45.838      6.486    7.07   0.0000000000034954 ***
+as.factor(site_id)13     69.179      6.486   10.67 &lt; 0.0000000000000002 ***
+as.factor(site_id)14     40.872      6.486    6.30   0.0000000004904638 ***
+as.factor(site_id)15     83.700      6.486   12.91 &lt; 0.0000000000000002 ***
+as.factor(site_id)16     26.985      6.486    4.16   0.0000352415476313 ***
+as.factor(site_id)17     41.511      6.486    6.40   0.0000000002669302 ***
+as.factor(site_id)18     38.370      6.486    5.92   0.0000000049276025 ***
+as.factor(site_id)19     23.508      6.486    3.62              0.00031 ***
+as.factor(site_id)20     65.428      6.486   10.09 &lt; 0.0000000000000002 ***
+as.factor(site_id)21     46.448      6.724    6.91   0.0000000000102343 ***
+as.factor(site_id)22     -2.000      6.724   -0.30              0.76625    
+as.factor(site_id)23     32.435      6.724    4.82   0.0000016958215925 ***
+as.factor(site_id)24     61.724      6.724    9.18 &lt; 0.0000000000000002 ***
+as.factor(site_id)25     15.872      6.724    2.36              0.01851 *  
+as.factor(site_id)26     24.709      6.724    3.67              0.00025 ***
+as.factor(site_id)27     54.173      6.724    8.06   0.0000000000000029 ***
+as.factor(site_id)28     25.955      6.724    3.86              0.00012 ***
+as.factor(site_id)29     52.221      6.724    7.77   0.0000000000000254 ***
+as.factor(site_id)30     37.721      6.724    5.61   0.0000000281492511 ***
+as.factor(period_id)2     2.226      6.266    0.36              0.72249    
+as.factor(period_id)3     3.294      6.266    0.53              0.59919    
+as.factor(period_id)4     2.677      6.266    0.43              0.66935    
+as.factor(period_id)5     1.659      6.266    0.26              0.79123    
+as.factor(period_id)6     5.975      6.266    0.95              0.34059    
+as.factor(period_id)7   -15.128      6.266   -2.41              0.01599 *  
+as.factor(period_id)8    -0.915      6.266   -0.15              0.88390    
+as.factor(period_id)9     4.128      6.266    0.66              0.51016    
+as.factor(period_id)10    0.118      6.266    0.02              0.98501    
+as.factor(period_id)11    6.064      6.266    0.97              0.33340    
+as.factor(period_id)12    1.679      6.266    0.27              0.78886    
+as.factor(period_id)13    6.236      6.266    1.00              0.31991    
+as.factor(period_id)14  -14.882      6.266   -2.38              0.01779 *  
+as.factor(period_id)15    7.582      6.698    1.13              0.25801    
+as.factor(period_id)16    6.139      6.698    0.92              0.35969    
+as.factor(period_id)17   11.229      6.698    1.68              0.09406 .  
+as.factor(period_id)18    4.290      6.698    0.64              0.52210    
+as.factor(period_id)19    9.898      6.698    1.48              0.13989    
+as.factor(period_id)20    9.292      6.698    1.39              0.16578    
+as.factor(period_id)21  -10.433      6.698   -1.56              0.11976    
+as.factor(period_id)22    7.681      6.698    1.15              0.25184    
+as.factor(period_id)23    7.667      6.698    1.14              0.25273    
+as.factor(period_id)24    6.543      6.698    0.98              0.32895    
+as.factor(period_id)25    5.465      6.698    0.82              0.41479    
+as.factor(period_id)26    9.694      6.698    1.45              0.14823    
+as.factor(period_id)27    8.670      6.698    1.29              0.19592    
+as.factor(period_id)28  -14.146      6.698   -2.11              0.03502 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 24 on 782 degrees of freedom
+Multiple R-squared:  0.708, Adjusted R-squared:  0.687 
+F-statistic: 33.3 on 57 and 782 DF,  p-value: &lt;0.0000000000000002</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># diagnosis</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate dataset 3</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>mdl3 <span class="ot">=</span> <span class="fu">lm</span>(y3 <span class="sc">~</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(is_treated) <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(site_id) <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>           <span class="fu">as.factor</span>(period_id)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>         , <span class="at">data =</span> df.tc)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># results</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mdl3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y3 ~ as.factor(is_treated) + as.factor(site_id) + 
+    as.factor(period_id), data = df.tc)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-96.24 -26.67   0.22  26.62  93.68 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(&gt;|t|)    
+(Intercept)             186.033     10.221   18.20 &lt; 0.0000000000000002 ***
+as.factor(is_treated)1 -106.410      5.719  -18.61 &lt; 0.0000000000000002 ***
+as.factor(site_id)2     -68.288     10.441   -6.54  0.00000000011084774 ***
+as.factor(site_id)3     -71.232     10.441   -6.82  0.00000000001795105 ***
+as.factor(site_id)4    -160.499     10.441  -15.37 &lt; 0.0000000000000002 ***
+as.factor(site_id)5     -90.453     10.441   -8.66 &lt; 0.0000000000000002 ***
+as.factor(site_id)6    -123.478     10.441  -11.83 &lt; 0.0000000000000002 ***
+as.factor(site_id)7    -135.162     10.441  -12.95 &lt; 0.0000000000000002 ***
+as.factor(site_id)8     -72.144     10.441   -6.91  0.00000000001008088 ***
+as.factor(site_id)9     -88.116     10.441   -8.44 &lt; 0.0000000000000002 ***
+as.factor(site_id)10    -69.989     10.441   -6.70  0.00000000003903347 ***
+as.factor(site_id)11    -36.133     10.441   -3.46              0.00057 ***
+as.factor(site_id)12    -83.822     10.441   -8.03  0.00000000000000363 ***
+as.factor(site_id)13    -46.169     10.441   -4.42  0.00001116771933140 ***
+as.factor(site_id)14    -47.189     10.441   -4.52  0.00000715405048579 ***
+as.factor(site_id)15    -49.348     10.441   -4.73  0.00000271129748627 ***
+as.factor(site_id)16    -69.850     10.441   -6.69  0.00000000004253751 ***
+as.factor(site_id)17    -53.357     10.441   -5.11  0.00000040468764682 ***
+as.factor(site_id)18    -51.428     10.441   -4.93  0.00000102682410128 ***
+as.factor(site_id)19    -66.568     10.441   -6.38  0.00000000031132418 ***
+as.factor(site_id)20    -75.348     10.441   -7.22  0.00000000000126332 ***
+as.factor(site_id)21   -136.927     10.826  -12.65 &lt; 0.0000000000000002 ***
+as.factor(site_id)22    -89.941     10.826   -8.31  0.00000000000000043 ***
+as.factor(site_id)23   -122.117     10.826  -11.28 &lt; 0.0000000000000002 ***
+as.factor(site_id)24    -13.933     10.826   -1.29              0.19846    
+as.factor(site_id)25    -78.024     10.826   -7.21  0.00000000000134537 ***
+as.factor(site_id)26     60.504     10.826    5.59  0.00000003155328514 ***
+as.factor(site_id)27    -92.560     10.826   -8.55 &lt; 0.0000000000000002 ***
+as.factor(site_id)28    -77.801     10.826   -7.19  0.00000000000155036 ***
+as.factor(site_id)29   -103.750     10.826   -9.58 &lt; 0.0000000000000002 ***
+as.factor(site_id)30    -26.566     10.826   -2.45              0.01434 *  
+as.factor(period_id)2     2.226     10.087    0.22              0.82540    
+as.factor(period_id)3     3.294     10.087    0.33              0.74406    
+as.factor(period_id)4     2.677     10.087    0.27              0.79080    
+as.factor(period_id)5     1.659     10.087    0.16              0.86939    
+as.factor(period_id)6     5.975     10.087    0.59              0.55380    
+as.factor(period_id)7   -15.128     10.087   -1.50              0.13409    
+as.factor(period_id)8    -0.915     10.087   -0.09              0.92772    
+as.factor(period_id)9     4.128     10.087    0.41              0.68244    
+as.factor(period_id)10    0.118     10.087    0.01              0.99069    
+as.factor(period_id)11    6.064     10.087    0.60              0.54787    
+as.factor(period_id)12    1.679     10.087    0.17              0.86788    
+as.factor(period_id)13    6.236     10.087    0.62              0.53660    
+as.factor(period_id)14  -14.882     10.087   -1.48              0.14053    
+as.factor(period_id)15   36.117     10.783    3.35              0.00085 ***
+as.factor(period_id)16   34.674     10.783    3.22              0.00136 ** 
+as.factor(period_id)17   39.764     10.783    3.69              0.00024 ***
+as.factor(period_id)18   32.824     10.783    3.04              0.00241 ** 
+as.factor(period_id)19   38.433     10.783    3.56              0.00039 ***
+as.factor(period_id)20   37.826     10.783    3.51              0.00048 ***
+as.factor(period_id)21   18.102     10.783    1.68              0.09362 .  
+as.factor(period_id)22   36.216     10.783    3.36              0.00082 ***
+as.factor(period_id)23   36.202     10.783    3.36              0.00083 ***
+as.factor(period_id)24   35.078     10.783    3.25              0.00119 ** 
+as.factor(period_id)25   34.000     10.783    3.15              0.00168 ** 
+as.factor(period_id)26   38.229     10.783    3.55              0.00042 ***
+as.factor(period_id)27   37.205     10.783    3.45              0.00059 ***
+as.factor(period_id)28   14.389     10.783    1.33              0.18248    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 39 on 782 degrees of freedom
+Multiple R-squared:  0.719, Adjusted R-squared:  0.699 
+F-statistic: 35.1 on 57 and 782 DF,  p-value: &lt;0.0000000000000002</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># diagnosis</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-8-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The residual vs.&nbsp;fitted values plots show increasingly clear patterns of clustering as the standard deviation increases. In particular, when the standard deviation of the cluster-level error term is 50, the residuals are visibly clustered. The QQ plots further indicate that the residuals deviate from normality.</p>
+<p>To facilitate visual comparison, these plots are organised in a grid layout:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl, <span class="at">which =</span> <span class="dv">1</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.75</span>,        <span class="co"># Point size</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.lab =</span> <span class="fl">0.75</span>,    <span class="co"># Axis labels</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.axis =</span> <span class="fl">0.75</span>,   <span class="co"># Tick labels</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.main =</span> <span class="fl">0.5</span>    <span class="co"># Title size</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl, <span class="at">which =</span> <span class="dv">2</span>)  <span class="co"># QQ Plot</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl2, <span class="at">which =</span> <span class="dv">1</span>)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl2, <span class="at">which =</span> <span class="dv">2</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl3, <span class="at">which =</span> <span class="dv">1</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mdl3, <span class="at">which =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="synData6_clusterRobustStandardErrors_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We now focus on the treatment effect estimates. The table below summarises the estimated coefficients and their corresponding standard errors for each dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df.result <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cluster_err_sd     =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">50</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">beta  =</span> <span class="fu">c</span>(<span class="fu">coef</span>(mdl)[<span class="dv">2</span>],  <span class="fu">coef</span>(mdl2)[<span class="dv">2</span>],  <span class="fu">coef</span>(mdl3)[<span class="dv">2</span>]),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">std_err =</span> <span class="fu">c</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(mdl)))[<span class="dv">2</span>],</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(mdl2)))[<span class="dv">2</span>],</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(mdl3)))[<span class="dv">2</span>]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_lb =</span> beta <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> std_err,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_ub =</span> beta <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> std_err</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df.result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  cluster_err_sd beta std_err ci_lb ci_ub
+1             10  -50     1.9   -54   -47
+2             30  -70     3.6   -77   -64
+3             50 -106     5.7  -118   -95</code></pre>
+</div>
+</div>
+<p>The results show that only when the standard deviation of the cluster-level error term is 10, the conventional OLS estimation successfully recovers the treatment effect—that is, the true value of <span class="math inline">\(\beta\)</span> lies within the 95% confidence interval. As the cluster-level error variance increases, standard errors are underestimated, and inference becomes unreliable. ### Estimation: cluster robust standard error</p>
+<p>We reuse the previously estimated models and compute cluster-robust standard errors, which are robust to correlation of error terms within clusters. The <code>clubSandwich</code> package in R is used to compute these standard errors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clubSandwich)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 method overwritten by 'clubSandwich':
+  method    from    
+  bread.mlm sandwich</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute cluster robust variance-covariance matrix</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>crVarCov  <span class="ot">=</span> <span class="fu">vcovCR</span>(mdl,  <span class="at">cluster =</span> df.tc<span class="sc">$</span>cluster_id, <span class="at">type =</span> <span class="st">"CR2"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>crVarCov2 <span class="ot">=</span> <span class="fu">vcovCR</span>(mdl2, <span class="at">cluster =</span> df.tc<span class="sc">$</span>cluster_id, <span class="at">type =</span> <span class="st">"CR2"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>crVarCov3 <span class="ot">=</span> <span class="fu">vcovCR</span>(mdl3, <span class="at">cluster =</span> df.tc<span class="sc">$</span>cluster_id, <span class="at">type =</span> <span class="st">"CR2"</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute standard error for all coefficients</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>est <span class="ot">=</span> <span class="fu">coef_test</span>(mdl, <span class="at">vcov =</span> crVarCov)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>est2<span class="ot">=</span> <span class="fu">coef_test</span>(mdl2, <span class="at">vcov =</span> crVarCov2)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>est3<span class="ot">=</span> <span class="fu">coef_test</span>(mdl3, <span class="at">vcov =</span> crVarCov3)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(est)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Coef. Estimate    SE  t-stat d.f. (Satt) p-val (Satt) Sig.
+            (Intercept)  104.804 13.17  7.9596        3.45      0.00245   **
+ as.factor(is_treated)1  -50.164  6.09 -8.2419       18.11      &lt; 0.001  ***
+    as.factor(site_id)2   -7.877 12.80 -0.6153        1.99      0.60120     
+    as.factor(site_id)3   -4.805 14.58 -0.3296        1.99      0.77312     
+    as.factor(site_id)4   -3.033 12.86 -0.2357        1.99      0.83562     
+    as.factor(site_id)5    1.409 15.92  0.0885        1.99      0.93754     
+    as.factor(site_id)6   -2.274 13.20 -0.1723        1.99      0.87912     
+    as.factor(site_id)7   -3.389 19.03 -0.1780        1.99      0.87513     
+    as.factor(site_id)8    6.721 21.68  0.3100        1.99      0.78597     
+    as.factor(site_id)9  -11.707 13.22 -0.8857        1.99      0.46945     
+   as.factor(site_id)10   10.739 13.19  0.8138        1.99      0.50142     
+   as.factor(site_id)11    7.091 15.20  0.4667        1.99      0.68675     
+   as.factor(site_id)12   -7.076 12.88 -0.5494        1.99      0.63800     
+   as.factor(site_id)13   14.674 17.63  0.8321        1.99      0.49307     
+   as.factor(site_id)14   -0.994 17.07 -0.0582        1.99      0.95888     
+   as.factor(site_id)15    8.899 16.08  0.5535        1.99      0.63565     
+   as.factor(site_id)16    2.601 13.08  0.1988        1.99      0.86082     
+   as.factor(site_id)17    7.099 16.06  0.4419        1.99      0.70183     
+   as.factor(site_id)18   27.630 12.92  2.1388        1.99      0.16621     
+   as.factor(site_id)19   21.118 13.85  1.5249        1.99      0.26711     
+   as.factor(site_id)20   16.987 16.06  1.0575        1.99      0.40140     
+   as.factor(site_id)21    7.083 16.90  0.4192        2.28      0.71133     
+   as.factor(site_id)22   14.582 13.54  1.0768        2.28      0.38223     
+   as.factor(site_id)23   16.186 13.67  1.1837        2.28      0.34527     
+   as.factor(site_id)24    6.796 13.21  0.5146        2.28      0.65245     
+   as.factor(site_id)25    9.764 14.52  0.6723        2.28      0.56315     
+   as.factor(site_id)26   13.212 14.98  0.8817        2.28      0.46100     
+   as.factor(site_id)27   25.333 19.07  1.3285        2.28      0.30140     
+   as.factor(site_id)28   17.193 16.27  1.0570        2.28      0.38956     
+   as.factor(site_id)29   17.142 13.58  1.2621        2.28      0.32067     
+   as.factor(site_id)30   21.227 13.87  1.5309        2.28      0.25050     
+  as.factor(period_id)2    2.226  2.47  0.9015       29.00      0.37473     
+  as.factor(period_id)3    3.294  3.33  0.9908       29.00      0.33000     
+  as.factor(period_id)4    2.677  2.67  1.0043       29.00      0.32352     
+  as.factor(period_id)5    1.659  2.89  0.5737       29.00      0.57063     
+  as.factor(period_id)6    5.975  2.57  2.3224       29.00      0.02744    *
+  as.factor(period_id)7  -15.128  2.65 -5.7124       29.00      &lt; 0.001  ***
+  as.factor(period_id)8   -0.915  2.57 -0.3560       29.00      0.72445     
+  as.factor(period_id)9    4.128  2.21  1.8710       29.00      0.07147    .
+ as.factor(period_id)10    0.118  2.60  0.0454       29.00      0.96413     
+ as.factor(period_id)11    6.064  2.19  2.7735       29.00      0.00959   **
+ as.factor(period_id)12    1.679  2.34  0.7166       29.00      0.47934     
+ as.factor(period_id)13    6.236  2.77  2.2513       29.00      0.03211    *
+ as.factor(period_id)14  -14.882  2.75 -5.4081       29.00      &lt; 0.001  ***
+ as.factor(period_id)15    7.393  5.84  1.2661       48.68      0.21151     
+ as.factor(period_id)16    5.950  5.59  1.0637       48.68      0.29269     
+ as.factor(period_id)17   11.040  5.28  2.0924       48.68      0.04164    *
+ as.factor(period_id)18    4.101  5.10  0.8037       48.68      0.42550     
+ as.factor(period_id)19    9.709  5.79  1.6762       48.68      0.10011     
+ as.factor(period_id)20    9.103  5.20  1.7495       48.68      0.08650    .
+ as.factor(period_id)21  -10.621  5.52 -1.9239       48.68      0.06023    .
+ as.factor(period_id)22    7.493  5.07  1.4790       48.68      0.14558     
+ as.factor(period_id)23    7.478  5.54  1.3489       48.68      0.18362     
+ as.factor(period_id)24    6.355  5.46  1.1629       48.68      0.25055     
+ as.factor(period_id)25    5.277  5.41  0.9755       48.68      0.33411     
+ as.factor(period_id)26    9.505  5.20  1.8284       48.68      0.07362    .
+ as.factor(period_id)27    8.481  5.40  1.5716       48.68      0.12252     
+ as.factor(period_id)28  -14.334  5.41 -2.6497       48.68      0.01084    *</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(est2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Coef. Estimate    SE  t-stat d.f. (Satt) p-val (Satt) Sig.
+            (Intercept)   78.155 10.65  7.3357        3.45      0.00320   **
+ as.factor(is_treated)1  -70.473 17.50 -4.0276       18.11      &lt; 0.001  ***
+    as.factor(site_id)2   59.882 30.45  1.9669        1.99      0.18844     
+    as.factor(site_id)3   35.686 21.46  1.6632        1.99      0.23852     
+    as.factor(site_id)4   43.327 13.55  3.1973        1.99      0.08578    .
+    as.factor(site_id)5   38.614 12.37  3.1225        1.99      0.08939    .
+    as.factor(site_id)6   52.963 48.33  1.0959        1.99      0.38774     
+    as.factor(site_id)7    8.833 23.34  0.3785        1.99      0.74154     
+    as.factor(site_id)8   60.140 17.94  3.3526        1.99      0.07892    .
+    as.factor(site_id)9   26.859 44.72  0.6006        1.99      0.60925     
+   as.factor(site_id)10   68.688 25.79  2.6630        1.99      0.11715     
+   as.factor(site_id)11   29.139 12.72  2.2900        1.99      0.14952     
+   as.factor(site_id)12   45.838 15.04  3.0471        1.99      0.09325    .
+   as.factor(site_id)13   69.179 20.59  3.3598        1.99      0.07862    .
+   as.factor(site_id)14   40.872 13.96  2.9275        1.99      0.09988    .
+   as.factor(site_id)15   83.700 24.48  3.4193        1.99      0.07621    .
+   as.factor(site_id)16   26.985 19.17  1.4077        1.99      0.29484     
+   as.factor(site_id)17   41.511 10.89  3.8126        1.99      0.06269    .
+   as.factor(site_id)18   38.370  9.26  4.1454        1.99      0.05381    .
+   as.factor(site_id)19   23.508 13.20  1.7813        1.99      0.21717     
+   as.factor(site_id)20   65.428 33.21  1.9702        1.99      0.18798     
+   as.factor(site_id)21   46.448 28.26  1.6434        2.28      0.22667     
+   as.factor(site_id)22   -2.000 15.42 -0.1297        2.28      0.90739     
+   as.factor(site_id)23   32.435 13.57  2.3906        2.28      0.12387     
+   as.factor(site_id)24   61.724 43.07  1.4331        2.28      0.27371     
+   as.factor(site_id)25   15.872 19.41  0.8177        2.28      0.49020     
+   as.factor(site_id)26   24.709 19.28  1.2816        2.28      0.31488     
+   as.factor(site_id)27   54.173 12.46  4.3477        2.28      0.03860    *
+   as.factor(site_id)28   25.955 37.00  0.7015        2.28      0.54779     
+   as.factor(site_id)29   52.221 12.49  4.1827        2.28      0.04184    *
+   as.factor(site_id)30   37.721 35.92  1.0502        2.28      0.39209     
+  as.factor(period_id)2    2.226  2.47  0.9015       29.00      0.37473     
+  as.factor(period_id)3    3.294  3.33  0.9908       29.00      0.33000     
+  as.factor(period_id)4    2.677  2.67  1.0043       29.00      0.32352     
+  as.factor(period_id)5    1.659  2.89  0.5737       29.00      0.57063     
+  as.factor(period_id)6    5.975  2.57  2.3224       29.00      0.02744    *
+  as.factor(period_id)7  -15.128  2.65 -5.7124       29.00      &lt; 0.001  ***
+  as.factor(period_id)8   -0.915  2.57 -0.3560       29.00      0.72445     
+  as.factor(period_id)9    4.128  2.21  1.8710       29.00      0.07147    .
+ as.factor(period_id)10    0.118  2.60  0.0454       29.00      0.96413     
+ as.factor(period_id)11    6.064  2.19  2.7735       29.00      0.00959   **
+ as.factor(period_id)12    1.679  2.34  0.7166       29.00      0.47934     
+ as.factor(period_id)13    6.236  2.77  2.2513       29.00      0.03211    *
+ as.factor(period_id)14  -14.882  2.75 -5.4081       29.00      &lt; 0.001  ***
+ as.factor(period_id)15    7.582 15.00  0.5055       48.68      0.61551     
+ as.factor(period_id)16    6.139 14.44  0.4250       48.68      0.67269     
+ as.factor(period_id)17   11.229 14.68  0.7650       48.68      0.44799     
+ as.factor(period_id)18    4.290 15.12  0.2837       48.68      0.77783     
+ as.factor(period_id)19    9.898 15.23  0.6500       48.68      0.51873     
+ as.factor(period_id)20    9.292 14.37  0.6464       48.68      0.52103     
+ as.factor(period_id)21  -10.433 14.58 -0.7155       48.68      0.47771     
+ as.factor(period_id)22    7.681 15.12  0.5082       48.68      0.61362     
+ as.factor(period_id)23    7.667 14.91  0.5142       48.68      0.60943     
+ as.factor(period_id)24    6.543 14.82  0.4417       48.68      0.66069     
+ as.factor(period_id)25    5.465 14.68  0.3723       48.68      0.71126     
+ as.factor(period_id)26    9.694 14.72  0.6587       48.68      0.51317     
+ as.factor(period_id)27    8.670 14.69  0.5903       48.68      0.55770     
+ as.factor(period_id)28  -14.146 15.02 -0.9416       48.68      0.35103     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(est3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  Coef. Estimate    SE  t-stat d.f. (Satt) p-val (Satt) Sig.
+            (Intercept)  186.033 48.92  3.8025        3.45      0.02493    *
+ as.factor(is_treated)1 -106.410 29.55 -3.6006       18.11      0.00203   **
+    as.factor(site_id)2  -68.288 49.02 -1.3930        1.99      0.29856     
+    as.factor(site_id)3  -71.232 49.09 -1.4509        1.99      0.28422     
+    as.factor(site_id)4 -160.499 49.46 -3.2451        1.99      0.08358    .
+    as.factor(site_id)5  -90.453 48.09 -1.8808        1.99      0.20109     
+    as.factor(site_id)6 -123.478 63.45 -1.9460        1.99      0.19141     
+    as.factor(site_id)7 -135.162 52.62 -2.5689        1.99      0.12432     
+    as.factor(site_id)8  -72.144 63.76 -1.1314        1.99      0.37557     
+    as.factor(site_id)9  -88.116 59.13 -1.4903        1.99      0.27494     
+   as.factor(site_id)10  -69.989 52.84 -1.3245        1.99      0.31672     
+   as.factor(site_id)11  -36.133 91.75 -0.3938        1.99      0.73184     
+   as.factor(site_id)12  -83.822 48.29 -1.7358        1.99      0.22508     
+   as.factor(site_id)13  -46.169 66.68 -0.6924        1.99      0.56044     
+   as.factor(site_id)14  -47.189 57.99 -0.8138        1.99      0.50145     
+   as.factor(site_id)15  -49.348 95.27 -0.5180        1.99      0.65620     
+   as.factor(site_id)16  -69.850 59.20 -1.1798        1.99      0.35968     
+   as.factor(site_id)17  -53.357 48.22 -1.1064        1.99      0.38408     
+   as.factor(site_id)18  -51.428 48.10 -1.0693        1.99      0.39716     
+   as.factor(site_id)19  -66.568 67.95 -0.9796        1.99      0.43081     
+   as.factor(site_id)20  -75.348 51.51 -1.4627        1.99      0.28141     
+   as.factor(site_id)21 -136.927 53.89 -2.5411        2.28      0.11104     
+   as.factor(site_id)22  -89.941 55.01 -1.6350        2.28      0.22836     
+   as.factor(site_id)23 -122.117 91.22 -1.3388        2.28      0.29855     
+   as.factor(site_id)24  -13.933 64.95 -0.2145        2.28      0.84785     
+   as.factor(site_id)25  -78.024 67.42 -1.1573        2.28      0.35402     
+   as.factor(site_id)26   60.504 52.55  1.1513        2.28      0.35604     
+   as.factor(site_id)27  -92.560 57.41 -1.6124        2.28      0.23296     
+   as.factor(site_id)28  -77.801 50.96 -1.5266        2.28      0.25147     
+   as.factor(site_id)29 -103.750 74.35 -1.3955        2.28      0.28331     
+   as.factor(site_id)30  -26.566 54.01 -0.4919        2.28      0.66618     
+  as.factor(period_id)2    2.226  2.47  0.9015       29.00      0.37473     
+  as.factor(period_id)3    3.294  3.33  0.9908       29.00      0.33000     
+  as.factor(period_id)4    2.677  2.67  1.0043       29.00      0.32352     
+  as.factor(period_id)5    1.659  2.89  0.5737       29.00      0.57063     
+  as.factor(period_id)6    5.975  2.57  2.3224       29.00      0.02744    *
+  as.factor(period_id)7  -15.128  2.65 -5.7124       29.00      &lt; 0.001  ***
+  as.factor(period_id)8   -0.915  2.57 -0.3560       29.00      0.72445     
+  as.factor(period_id)9    4.128  2.21  1.8710       29.00      0.07147    .
+ as.factor(period_id)10    0.118  2.60  0.0454       29.00      0.96413     
+ as.factor(period_id)11    6.064  2.19  2.7735       29.00      0.00959   **
+ as.factor(period_id)12    1.679  2.34  0.7166       29.00      0.47934     
+ as.factor(period_id)13    6.236  2.77  2.2513       29.00      0.03211    *
+ as.factor(period_id)14  -14.882  2.75 -5.4081       29.00      &lt; 0.001  ***
+ as.factor(period_id)15   36.117 24.63  1.4662       48.68      0.14903     
+ as.factor(period_id)16   34.674 24.17  1.4346       48.68      0.15780     
+ as.factor(period_id)17   39.764 24.57  1.6181       48.68      0.11210     
+ as.factor(period_id)18   32.824 24.84  1.3213       48.68      0.19259     
+ as.factor(period_id)19   38.433 24.71  1.5554       48.68      0.12632     
+ as.factor(period_id)20   37.826 24.02  1.5748       48.68      0.12177     
+ as.factor(period_id)21   18.102 24.44  0.7405       48.68      0.46254     
+ as.factor(period_id)22   36.216 24.96  1.4509       48.68      0.15321     
+ as.factor(period_id)23   36.202 24.94  1.4514       48.68      0.15307     
+ as.factor(period_id)24   35.078 24.18  1.4507       48.68      0.15327     
+ as.factor(period_id)25   34.000 24.36  1.3957       48.68      0.16914     
+ as.factor(period_id)26   38.229 24.66  1.5505       48.68      0.12750     
+ as.factor(period_id)27   37.205 24.70  1.5066       48.68      0.13839     
+ as.factor(period_id)28   14.389 25.12  0.5728       48.68      0.56942     </code></pre>
+</div>
+</div>
+<p>We again focus on the treatment effect estimates. For ease of comparison, we extend the previous table to include the cluster-robust standard errors and their associated 95% confidence intervals. Notably, the true treatment effect, <span class="math inline">\(\beta\)</span>, lies within the 95% confidence interval for all three datasets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df.result <span class="ot">=</span> df.result <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cr_std_err =</span> <span class="fu">c</span>(est[<span class="dv">2</span>,<span class="st">"SE"</span>], est2[<span class="dv">2</span>,<span class="st">"SE"</span>], est3[<span class="dv">2</span>,<span class="st">"SE"</span>])) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cr_ci_lb =</span> beta <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span>cr_std_err) <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cr_ci_ub =</span> beta <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>cr_std_err)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df.result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  cluster_err_sd beta std_err ci_lb ci_ub cr_std_err cr_ci_lb cr_ci_ub
+1             10  -50     1.9   -54   -47        6.1      -62      -38
+2             30  -70     3.6   -77   -64       17.5     -105      -36
+3             50 -106     5.7  -118   -95       29.6     -164      -48</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Conclusion</h1>
+<p>This post explores how repeated measurements can jeopardise TWFE estimation. We show that conventional OLS estimation is not reliable when error terms are correlated due to repeated measurements. In our numerical experiments, the model only recovered the true treatment effect when the correlation was minor—that is, when the standard deviation of the cluster-level error term was small.</p>
+<p>The findings of this experiment are pedagogically valuable. They reveal the limitations of OLS estimation in the presence of correlated error terms. More importantly, they highlight that panel data with long time series may not contain as much independent information as we might assume. Many data points in these datasets may be repeated measurements and, as such, carry similar information. They contribute little to improving the precision of OLS estimates. In fact, they can inflate standard errors, leading to misleadingly narrow confidence intervals and potentially incorrect conclusions.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

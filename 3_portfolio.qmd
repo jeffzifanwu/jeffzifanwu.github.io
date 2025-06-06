@@ -1,12 +1,43 @@
 ---
 title: "Portfolio"
-listing:
-  contents: 3_portfolio
-  sort: "date desc"
-  type: default
-  categories: true
-  sort-ui: false
-  filter-ui: false
+format: html
 page-layout: full
 title-block-banner: true
+resources:
+  - 3_portfolio/CRSE25/synData6_clusterRobustStandardErrors_files/**
+  - 3_portfolio/MBO25/synData5_binaryOutcomes_files/**
 ---
+
+[CRSE25](3_portfolio/CRSE25/synData6_clusterRobustStandardErrors.html)
+
+Panel data may contain repeated measurements on the same units, leading to correlated error terms across observations. This post examines how two-way fixed effects (TWFE) models are impacted when fitted to such datasets and explores cluster-robust standard errors (CRSE) as a solution to address these issues.
+
+Keywords: panel data, CRSE, TWFE
+
+------------------------------------------------------------------------
+
+[MBO25](3_portfolio/MBO25/synData5_binaryOutcomes.html)
+
+Both Discrete Choice Modelling (DCM) and Generalised Linear Modelling (GLM) frameworks are used to analyse binary outcomes. This post presents the theoretical underpinnings of these modelling frameworks and highlights their similarities.
+
+Keywords: DCM, GLM
+
+------------------------------------------------------------------------
+
+[PRP24](3_portfolio/PRP24/Collinearity%20with%20Proportion%20Predictors.html)
+
+Diagnosing and addressing collinear issues with proportion predictors.
+
+Keywords: collinearity, regression
+
+------------------------------------------------------------------------
+
+[SUR24](3_portfolio/SUR24/compareOlsAndSur-20240825.html)
+
+Comparing OLS and Seemingly Unrelated Regression (SUR) methods in two settings:
+
+1.  Linear regression with panel data;
+
+2.  System of linear equations with cross-sectional or longitudinal data.
+
+Keywords: panel data, system of equations, SUR

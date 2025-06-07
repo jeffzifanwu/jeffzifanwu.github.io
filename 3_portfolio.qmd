@@ -4,9 +4,16 @@ format: html
 page-layout: full
 title-block-banner: true
 resources:
+  - 3_portfolio/FECR25/synData7_FECR25_files/**
   - 3_portfolio/CRSE25/synData6_clusterRobustStandardErrors_files/**
   - 3_portfolio/MBO25/synData5_binaryOutcomes_files/**
 ---
+
+[FECR25](3_portfolio/FECR25/synData7_FECR25.html)
+
+`fixest` and `clubSandwich` are widely used R packages for working with TWFE models. This post demonstrates that `clubSandwich` currently does not support `fixest`-style models in general. However, there are some workarounds that compromise the high-performance algorithms of `fixest` while enabling compatibility with `clubSandwich`.
+
+------------------------------------------------------------------------
 
 [CRSE25](3_portfolio/CRSE25/synData6_clusterRobustStandardErrors.html)
 

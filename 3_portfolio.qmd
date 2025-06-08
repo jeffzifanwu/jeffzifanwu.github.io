@@ -13,11 +13,13 @@ resources:
 
 `fixest` and `clubSandwich` are widely used R packages for working with TWFE models. This post demonstrates that `clubSandwich` currently does not support `fixest`-style models in general. However, there are some workarounds that compromise the high-performance algorithms of `fixest` while enabling compatibility with `clubSandwich`.
 
+Keywords: R, TWFE, CRSE
+
 ------------------------------------------------------------------------
 
 [CRSE25](3_portfolio/CRSE25/synData6_clusterRobustStandardErrors.html)
 
-Panel data may contain repeated measurements on the same units, leading to correlated error terms across observations. This post examines how two-way fixed effects (TWFE) models are impacted when fitted to such datasets and explores cluster-robust standard errors (CRSE) as a solution to address these issues.
+Panel data may involve irregular time intervals between observations, leading to within-cluster correlation. This post examines how two-way fixed effects (TWFE) models are affected when applied to such data and discusses the use of cluster-robust standard errors (CRSE) to correct for the resulting issues.
 
 Keywords: panel data, CRSE, TWFE
 

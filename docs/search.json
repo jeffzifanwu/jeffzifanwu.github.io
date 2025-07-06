@@ -49,6 +49,13 @@
     "text": "FECR25\nfixest and clubSandwich are widely used R packages for working with TWFE models. This post demonstrates that clubSandwich currently does not support fixest-style models in general. However, there are some workarounds that compromise the high-performance algorithms of fixest while enabling compatibility with clubSandwich.\nKeywords: R, TWFE, CRSE\n\nCRSE25\nPanel data may involve irregular time intervals between observations, leading to within-cluster correlation. This post examines how two-way fixed effects (TWFE) models are affected when applied to such data and discusses the use of cluster-robust standard errors (CRSE) to correct for the resulting issues.\nKeywords: panel data, CRSE, TWFE\n\nMBO25\nBoth Discrete Choice Modelling (DCM) and Generalised Linear Modelling (GLM) frameworks are used to analyse binary outcomes. This post presents the theoretical underpinnings of these modelling frameworks and highlights their similarities.\nKeywords: DCM, GLM\n\nPRP24\nDiagnosing and addressing collinear issues with proportion predictors.\nKeywords: collinearity, regression\n\nSUR24\nComparing OLS and Seemingly Unrelated Regression (SUR) methods in two settings:\n\nLinear regression with panel data;\nSystem of linear equations with cross-sectional or longitudinal data.\n\nKeywords: panel data, system of equations, SUR"
   },
   {
+    "objectID": "1_cv.html",
+    "href": "1_cv.html",
+    "title": "CV",
+    "section": "",
+    "text": "&lt;p&gt;Download: &lt;a href=\"1_cv/JeffWuCV-20250623.pdf\"&gt;Download PDF&lt;/a&gt;.&lt;/p&gt;"
+  },
+  {
     "objectID": "2_software.html",
     "href": "2_software.html",
     "title": "Software",

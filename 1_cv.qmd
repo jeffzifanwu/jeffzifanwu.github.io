@@ -7,6 +7,6 @@ title-block-banner: true
 
 <iframe src="1_cv/Jeff Wu CV (20260203).pdf" width="100%" height="800px" style="border: none;">
 
-Download: <a href="1_cv/JeffWuCV-20250623.pdf">Download PDF</a>.
+Download: <a href="1_cv/Jeff Wu CV (20260203).pdf">Download PDF</a>.
 
 </iframe>

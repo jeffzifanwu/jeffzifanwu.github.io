@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jeff Wu">
+<meta name="dcterms.date" content="2026-04-13">
+
+<title>SPIDER: A Unified Framework for Policy-relevant Causal Research in the Social Sciences</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="spider_files/libs/clipboard/clipboard.min.js"></script>
+<script src="spider_files/libs/quarto-html/quarto.js"></script>
+<script src="spider_files/libs/quarto-html/popper.min.js"></script>
+<script src="spider_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="spider_files/libs/quarto-html/anchor.min.js"></script>
+<link href="spider_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="spider_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="spider_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="spider_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="spider_files/libs/bootstrap/bootstrap-a1ff8711b79ae3724c050874b28d9907.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="spider_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="spider_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="spider_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#keywords" id="toc-keywords" class="nav-link" data-scroll-target="#keywords"><span class="header-section-number">0.1</span> <strong>Keywords:</strong></a></li>
+  <li><a href="#sec-introduction" id="toc-sec-introduction" class="nav-link" data-scroll-target="#sec-introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-setup" id="toc-sec-setup" class="nav-link" data-scroll-target="#sec-setup"><span class="header-section-number">2</span> Setup</a>
+  <ul class="collapse">
+  <li><a href="#sec-index" id="toc-sec-index" class="nav-link" data-scroll-target="#sec-index"><span class="header-section-number">2.1</span> Indices</a></li>
+  <li><a href="#sec-variables" id="toc-sec-variables" class="nav-link" data-scroll-target="#sec-variables"><span class="header-section-number">2.2</span> Variables</a></li>
+  <li><a href="#sec-dependency" id="toc-sec-dependency" class="nav-link" data-scroll-target="#sec-dependency"><span class="header-section-number">2.3</span> Dependency structure</a></li>
+  </ul></li>
+  <li><a href="#sec-superpopulation" id="toc-sec-superpopulation" class="nav-link" data-scroll-target="#sec-superpopulation"><span class="header-section-number">3</span> Super-population</a>
+  <ul class="collapse">
+  <li><a href="#running-example" id="toc-running-example" class="nav-link" data-scroll-target="#running-example"><span class="header-section-number">3.1</span> Running example</a></li>
+  </ul></li>
+  <li><a href="#sec-parameters" id="toc-sec-parameters" class="nav-link" data-scroll-target="#sec-parameters"><span class="header-section-number">4</span> Parameters</a></li>
+  <li><a href="#sec-identification" id="toc-sec-identification" class="nav-link" data-scroll-target="#sec-identification"><span class="header-section-number">5</span> Identification</a></li>
+  <li><a href="#sec-data" id="toc-sec-data" class="nav-link" data-scroll-target="#sec-data"><span class="header-section-number">6</span> Data</a>
+  <ul class="collapse">
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example"><span class="header-section-number">6.1</span> Example</a>
+  <ul class="collapse">
+  <li><a href="#simulate-unit-dependent-variables" id="toc-simulate-unit-dependent-variables" class="nav-link" data-scroll-target="#simulate-unit-dependent-variables"><span class="header-section-number">6.1.1</span> Simulate unit-dependent variables</a></li>
+  <li><a href="#simulate-time-dependent-variables" id="toc-simulate-time-dependent-variables" class="nav-link" data-scroll-target="#simulate-time-dependent-variables"><span class="header-section-number">6.1.2</span> Simulate time-dependent variables</a></li>
+  <li><a href="#generate-treatment-status" id="toc-generate-treatment-status" class="nav-link" data-scroll-target="#generate-treatment-status"><span class="header-section-number">6.1.3</span> Generate treatment status</a></li>
+  <li><a href="#simulate-potential-outcomes" id="toc-simulate-potential-outcomes" class="nav-link" data-scroll-target="#simulate-potential-outcomes"><span class="header-section-number">6.1.4</span> Simulate potential outcomes</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#sec-estimation" id="toc-sec-estimation" class="nav-link" data-scroll-target="#sec-estimation"><span class="header-section-number">7</span> Estimation</a></li>
+  <li><a href="#sec-inference" id="toc-sec-inference" class="nav-link" data-scroll-target="#sec-inference"><span class="header-section-number">8</span> Inference</a></li>
+  <li><a href="#sec-conclusion" id="toc-sec-conclusion" class="nav-link" data-scroll-target="#sec-conclusion"><span class="header-section-number">9</span> Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">SPIDER: A Unified Framework for Policy-relevant Causal Research in the Social Sciences</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jeff Wu </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 13, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="abstract" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="abstract">Abstract</h2>
+</section>
+<section id="keywords" class="level2" data-number="0.1">
+<h2 data-number="0.1" class="anchored" data-anchor-id="keywords"><span class="header-section-number">0.1</span> <strong>Keywords:</strong></h2>
+</section>
+<section id="sec-introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>We propose the SPIDER framework for policy-relevant causal research in the social sciences. The framework organises causal research design into six interrelated modules — <strong>S</strong>uper-population, <strong>P</strong>arameters, <strong>I</strong>dentification, <strong>D</strong>ata, <strong>E</strong>stimation, and infe<strong>R</strong>ence — and makes explicit the assumptions that are routinely left implicit in current practice. This contribution aims to strengthen causal research across the social sciences.</p>
+<p>Existing guidance on causal research focuses narrowly on specific methods (e.g., Difference-in-Differences, Instrumental Variables) and leaves researchers to choose their approach based on data availability. This inevitably produces fragmented evidence, since different methods target different population parameters. SPIDER offers a more proactive approach. It enables researchers to define the target population and parameters based on their policy question, and guides them to construct an appropriate empirical strategy.</p>
+<hr>
+</section>
+<section id="sec-setup" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Setup</h1>
+<p>We introduce the primitives of the SPIDER framework. <a href="#sec-index" class="quarto-xref">Section&nbsp;2.1</a> outlines the indexing system used, and <a href="#sec-variables" class="quarto-xref">Section&nbsp;2.2</a> introduces the variables considered by the framework. This section is deliberately informal, helping readers understand the building blocks and context. The probability-theoretic foundations are deferred to the next sections.</p>
+<section id="sec-index" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="sec-index"><span class="header-section-number">2.1</span> Indices</h2>
+<p>Let <span class="math inline">\(i\)</span> denote an individual unit of analysis — for example, a neighbourhood, a transit stop, a person, or a household. Let <span class="math inline">\(t\)</span> denote discrete time, common across all units. The time unit may represent days, weeks, or months depending on the application.</p>
+<p>Let <span class="math inline">\(k \in \{1, \ldots, K\}\)</span> index the outcome variables of interest. For example, in a study of low-traffic neighbourhoods (LTNs), <span class="math inline">\(k = 1\)</span> may index neighbourhood internal traffic volume, <span class="math inline">\(k = 2\)</span> boundary road traffic volume, and <span class="math inline">\(k = 3\)</span> air pollution levels.</p>
+</section>
+<section id="sec-variables" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="sec-variables"><span class="header-section-number">2.2</span> Variables</h2>
+<p>Let <span class="math inline">\(S_i \in \mathcal{S}=\{s_0, s_1, \ldots, s_m\}\)</span> denote the treatment scheme assigned to unit <span class="math inline">\(i\)</span>. The baseline scheme <span class="math inline">\(s_0\)</span> corresponds to no treatment; <span class="math inline">\(s_1, \ldots, s_m\)</span> correspond to <span class="math inline">\(m\)</span> different treatment arms. Each unit is assigned to exactly one scheme, and assignment is time-invariant.</p>
+<p>Let <span class="math inline">\(P_t \in \mathcal{P} = \{p_0, p_1\}\)</span> denote the implementation status of the treatment at time <span class="math inline">\(t\)</span>. The baseline status <span class="math inline">\(p_0\)</span> corresponds to non-implementation; <span class="math inline">\(p_1\)</span> corresponds to implementation. Implementation status is common to all units at time <span class="math inline">\(t\)</span>.</p>
+<p>Let <span class="math inline">\(D_{i,t} \in \mathcal{D} = \{d_0, d_1, \ldots, d_M\}\)</span> denote the treatment status of unit <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>. The baseline status <span class="math inline">\(d_0\)</span> denotes the absence of treatment – either because the unit is assigned to the baseline scheme <span class="math inline">\(s_0\)</span>, or the treatment is not implemented <span class="math inline">\(p_0\)</span>. Other statuses <span class="math inline">\(d_1, \ldots, d_M\)</span> denote the presence of treatment under schemes <span class="math inline">\(s_1, \ldots, s_M\)</span>, respectively.</p>
+<p>Let <span class="math inline">\(Y^k_{i,t}(d) \in \mathbb{R}\)</span> denote the <span class="math inline">\(k\)</span>-th potential outcome of interest for unit <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> under treatment status <span class="math inline">\(D_{i,t} = d\)</span>.</p>
+<p>Let <span class="math inline">\(H_i \in \mathcal{H}\)</span> denote a vector of time-invariant characteristics of unit <span class="math inline">\(i\)</span>, such as population density, land use mix, and proximity to public transport.</p>
+<p>Let <span class="math inline">\(T_t \in \mathcal{T}\)</span> denote a vector of time-varying aggregate variables common to all units at time <span class="math inline">\(t\)</span>, such as oil prices and day-of-week.</p>
+</section>
+<section id="sec-dependency" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-dependency"><span class="header-section-number">2.3</span> Dependency structure</h2>
+<p>The treatment status <span class="math inline">\(D_{i,t}\)</span> is determined by the treatment scheme <span class="math inline">\(S_i\)</span> and the implementation status <span class="math inline">\(P_t\)</span>, formalised as follows:</p>
+<p><span class="math display">\[
+D_{i,t} = \begin{cases}
+d_0 &amp; \text{if } S_i = s_0 \text{ or } P_t = p_0, \\
+d_m &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<p>The potential outcomes <span class="math inline">\(Y^k_{i,t}(d_m)\)</span>, for all <span class="math inline">\(k\)</span> and <span class="math inline">\(m\)</span>, are dependent on the unit’s characteristics <span class="math inline">\(H_i\)</span>, time dependent aggregate variables <span class="math inline">\(T_t\)</span>, and their realised values in the previous time period <span class="math inline">\(Y^k_{i,t-1}(d_m)\)</span>. The exact functional form of this dependence is left unspecified, allowing for a wide range of dynamic and heterogeneous effects.</p>
+<p>The overall dependency structure is summarised in the following directed acyclic graph (DAG):</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    H[H] --&gt; S[S]
+    T[T] --&gt; P[P]
+    
+    S --&gt; D[D]
+    P --&gt; D
+    
+    H --&gt; Y[Y]
+    T --&gt; Y
+    D --&gt; Y
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="sec-superpopulation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Super-population</h1>
+<p>The super-population is a hypothetical data-generating process that produces all potential observations. It therefore provides the basis for cross-study comparability and extrapolating empirical results to future interventions. Two empirical studies are meaningfully comparable only if their data are generated by the same underlying process. Similarly, predicting the effects of future interventions requires that the underlying process remains stable.</p>
+<p>Formally, SPIDER models the super-population as an infinite stochastic process, <span class="math display">\[
+     \{H_i, S_i, T_t, P_t,
+     Y^1_{i,t}(d_0), \ldots, Y^1_{i,t}(d_M), \ldots,
+     Y^K_{i,t}(d_0), \ldots, Y^K_{i,t}(d_M) \}_{i \geq 1, t \geq 1}
+\]</span> with a well-defined joint distribution over these infinite sequences of random variables. Learning the parameters of this distribution is the ultimate goal of empirical work.</p>
+<p>A draw from this distribution is an infinite panel — one with unboundedly many units and time periods. Empirical data are however always finite. We conceptualise any dataset as a finite window into this infinite panel. The probability of observing a particular dataset is therefore the marginal probability that the corresponding panel entries take the observed values. To fix ideas, consider a study that observes <span class="math inline">\(N\)</span> neighbourhoods over <span class="math inline">\(L\)</span> years. This dataset is a finite window into the infinite panel. Inferential work on the super-population, based on this dataset, proceeds from the marginal distribution of the corresponding random variables: <span class="math inline">\(H_1, \ldots, H_N\)</span>, <span class="math inline">\(T_1, \ldots, T_L\)</span> and so forth.</p>
+<p>This construction licenses flexible cross-study comparisons and extrapolation. Two datasets of different sample sizes can be viewed as two finite windows into the same draw or different draws from the super-population. Empirical results from these two datasets remain meaningfully comparable, because they target the same super-population. Findings can also be extrapolated to future interventions provided the underlying super-population is stable.</p>
+<p>To make the super-population tractable for further analytical work and empirical applications, we impose two structural assumptions. Firstly, we assume that the sequence of unit characteristics and treatment schemes <span class="math inline">\(\{H_i, S_i\}_{i \geq 1}\)</span> is independent of the sequence of time characteristics and implementation status <span class="math inline">\(\{T_t, P_t\}_{t \geq 1}\)</span>. Dependencies within each sequence are permitted, i.e., <span class="math inline">\(S_i\)</span> may be correlated with <span class="math inline">\(H_i\)</span> or <span class="math inline">\(S_{i+1}\)</span>. For example, in a LTN study, a neighbourhood’s assigned treatment scheme (<span class="math inline">\(S_i\)</span>) may depend on the number of traffic lights on its boundary roads (<span class="math inline">\(H_i\)</span>). Neighbourhoods with more traffic lights may experience greater rat-running and therefore be assigned to a more intensive filtering scheme.</p>
+<p>Secondly, we permit potential outcomes <span class="math inline">\(Y^k_{i,t}(d_m)\)</span>, for all <span class="math inline">\(k,m\)</span>, to depend on the unit characteristics <span class="math inline">\(H_i\)</span> and time characteristics <span class="math inline">\(T_t\)</span>. Fixing <span class="math inline">\(k, i, t\)</span>, potential outcomes are correlated with one another only through this shared dependence on <span class="math inline">\(H_i\)</span> and <span class="math inline">\(T_t\)</span>. However, fixing <span class="math inline">\(m,i,t\)</span>, we additionally permit dependencies between potential outcomes of different types <span class="math inline">\(k\)</span> that are not captured by <span class="math inline">\(H_i\)</span> and <span class="math inline">\(T_t\)</span>. For example, in an LTN study, the air pollution levels (<span class="math inline">\(k=2\)</span>) is dependent on traffic volume (<span class="math inline">\(k=1\)</span>) even after conditioning on unit and time characteristics. In other words, holding unit and time characteristics fixed, increasing internal traffic volume may still increase air pollution levels.</p>
+<p>Together, these assumptions prevent the model from becoming intractable by ruling out unrestricted mutual dependence (i.e., everything depends on everything). Nonetheless, they still leave a wide range of dependency structures open for applied researchers to specify based on their substantive knowledge of the system under study.</p>
+<!-- Comment out
+The elements in $T_t$ are generally random variables. Some of these,
+however, may be deterministic in nature, such as day-of-week or seasonal
+indicators. That is, given the time index $t$, the value of such a
+variable is fully determined. They are accommodated as degenerate
+special cases. For example, if $t$ indexes days and $t=1$ is a Sunday,
+then the day-of-week random variable has a point-mass distribution on
+the value "Sunday" at $t=1$, "Monday" at $t=2$, and so on.
+-->
+<section id="running-example" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="running-example"><span class="header-section-number">3.1</span> Running example</h2>
+<p>To make the discussion concrete, we make use of a running example throughout the paper. In this example, the super-population consists of three time-invariant variables (<span class="math inline">\(H^{1}_{i}, H^{2}_{i}, H^{3}_{i}\)</span>) and three unit-invariant variables (<span class="math inline">\(T^{1}_{t}, T^{2}_{t}, T^{3}_t\)</span>). Their distributions are given in <a href="#tbl-independent-vars" class="quarto-xref">Table&nbsp;1</a>.</p>
+<div id="tbl-independent-vars" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-independent-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Independent variables
+</figcaption>
+<div aria-describedby="tbl-independent-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variables</th>
+<th>Marginal Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(H^{1}_{i}, H^{2}_{i}, H^{3}_{i}\)</span></td>
+<td>Bernoulli (0.5)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T^{1}_{t}, T^{2}_{t}\)</span></td>
+<td>Bernoulli (0.5)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T^{3}_t\)</span></td>
+<td>Bernoulli (<span class="math inline">\(\pi_t\)</span>), where <span class="math inline">\(\pi_t = \Phi\left(0.01*(t-1)\right)\)</span> <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>To keep the example simple and illustrative, all the independent variables are binary. The means of <span class="math inline">\(H^1_i, H^2_i, H^3_i, T^1_t, T^2_t\)</span> are all fixed at 0.5. The mean of <span class="math inline">\(T^3_t\)</span> increases over time, starting from 0.5 at <span class="math inline">\(t=1\)</span> and approaching 1 as <span class="math inline">\(t\)</span> increases.</p>
+<p>The treatment scheme <span class="math inline">\(S_i\)</span>, implementation status <span class="math inline">\(P_t\)</span> are binary variables, and potential outcomes <span class="math inline">\(Y^1_{i,t}(d_0), Y^1_{i,t}(d_1)\)</span> are given by: <span class="math display">\[
+\begin{aligned}
+S_{i} &amp;= \mathbb{1}\{-0.1*H^1_i + 0.2*H^2_i + \epsilon &gt; 0\} \\
+P_{t} &amp;= \mathbb{1}\{-0.1*T^1_t + 0.2*T^2_t + \epsilon &gt; 0\} \\
+Y^1_{i,t}(d_0) &amp;= 1 - 0.1*H^1_i + 0.3*H^3_i - 0.1*T^1_t + 0.3*T^3_t + \epsilon \\
+Y^1_{i,t}(d_1) &amp;= 0 - 0.1*H^1_i + 0.3*H^3_i - 0.1*T^1_t + 0.3*T^3_t + \epsilon
+\end{aligned}
+\]</span> where <span class="math inline">\(\epsilon\)</span> is a standard normal error term.</p>
+<hr>
+</section>
+</section>
+<section id="sec-parameters" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Parameters</h1>
+<!-- TODO: define causal parameters -->
+<p>The most poicy-relevant causal parameters are the (1) average treatment effects (ATEs) (2) average treatment effects on the treated (ATTs). They are formally defined as follows.</p>
+<hr>
+</section>
+<section id="sec-identification" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Identification</h1>
+<!-- TODO: parallel trends assumption and extensions; handling of staggered
+     adoption; addressing spillovers; identification of mediation estimands -->
+<hr>
+</section>
+<section id="sec-data" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Data</h1>
+<!-- TODO: sampling design; construction of the analysis dataset; variable
+     measurement; pre-processing decisions -->
+<section id="example" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="example"><span class="header-section-number">6.1</span> Example</h2>
+<section id="simulate-unit-dependent-variables" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="simulate-unit-dependent-variables"><span class="header-section-number">6.1.1</span> Simulate unit-dependent variables</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df.id.unit <span class="ot">=</span> <span class="fu">genIds</span>(<span class="at">dim1.size =</span> <span class="dv">100</span>, <span class="at">dim1.name =</span> <span class="st">"unit"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># H1, H2, H3</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">3</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H1"</span> <span class="co"># affect S</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H2"</span> <span class="co"># affect Y</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H3"</span> <span class="co"># confounder: affect both S,Y</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>df.ivar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>df.ivar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>df.ivar     <span class="ot">=</span> <span class="fu">genVars</span>(df.ivar.det, df.ivar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># S</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">1</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"S"</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>( (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.2</span>)<span class="sc">*</span>H2 )</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.unit, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.ivar)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>df.var.site <span class="ot">=</span> df.ivar <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(unit)`</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.var.site)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  H1   H2   H3    S 
+0.55 0.56 0.49 0.54 
+ H1  H2  H3   S 
+0.5 0.5 0.5 0.5 
+     H1   H2    H3     S
+H1 1.00 0.13  0.00  0.05
+H2 0.13 1.00  0.14  0.03
+H3 0.00 0.14  1.00 -0.06
+S  0.05 0.03 -0.06  1.00</code></pre>
+</div>
+</div>
+</section>
+<section id="simulate-time-dependent-variables" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="simulate-time-dependent-variables"><span class="header-section-number">6.1.2</span> Simulate time-dependent variables</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df.id.time <span class="ot">=</span> <span class="fu">genIds</span>(<span class="at">dim1.size =</span> <span class="dv">100</span>, <span class="at">dim1.name =</span> <span class="st">"time"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># T1, T2, T3</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">3</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T1"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T2"</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T3"</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(time<span class="sc">*</span><span class="fl">0.01</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>df.ivar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>df.ivar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>df.ivar     <span class="ot">=</span> <span class="fu">genVars</span>(df.ivar.det, df.ivar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># P</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">1</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"P"</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>( (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.2</span>)<span class="sc">*</span>T2 )</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.time, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.ivar)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg, <span class="at">ret_latent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>df.var.time <span class="ot">=</span> df.ivar <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar<span class="sc">$</span>final)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(time)`</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.var.time, <span class="at">exclude_cols =</span> <span class="fu">c</span>(<span class="st">"unit"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> time    T1    T2    T3     P 
+50.50  0.42  0.78  0.47  0.61 
+ time    T1    T2    T3     P 
+29.01  0.50  0.42  0.50  0.49 
+     time    T1    T2    T3     P
+time 1.00  0.00  0.16  0.02  0.07
+T1   0.00  1.00  0.06 -0.07  0.06
+T2   0.16  0.06  1.00 -0.08  0.02
+T3   0.02 -0.07 -0.08  1.00 -0.07
+P    0.07  0.06  0.02 -0.07  1.00</code></pre>
+</div>
+</div>
+</section>
+<section id="generate-treatment-status" class="level3" data-number="6.1.3">
+<h3 data-number="6.1.3" class="anchored" data-anchor-id="generate-treatment-status"><span class="header-section-number">6.1.3</span> Generate treatment status</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df.ids <span class="ot">=</span> <span class="fu">genIds</span>(df.id.unit, df.id.time)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create treatment status D</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df.treatStatus <span class="ot">=</span> df.ids <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.var.site) <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.var.time) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">D =</span> <span class="fu">if_else</span>(S <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> P <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(unit)`
+Joining with `by = join_by(time)`</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot panel</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(panelView)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>## See https://yiqingxu.org/packages/panelview/ for more info.
+## Report bugs -&gt; yiqingxu@stanford.edu.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a dummy Y</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># df.treatStatus = df.treatStatus %&gt;% mutate(Y = 1)</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">panelview</span>(<span class="dv">1</span> <span class="sc">~</span> D, <span class="at">data =</span> df.treatStatus, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"unit"</span>,<span class="st">"time"</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.lab =</span> <span class="st">"time"</span>, <span class="at">xlab =</span> <span class="st">"Time"</span>, <span class="at">ylab =</span> <span class="st">"Site"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">gridOff =</span> <span class="cn">TRUE</span>, <span class="at">by.timing =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">background =</span> <span class="st">"white"</span>, <span class="at">main =</span> <span class="st">"Simulated Data: Treatment Status"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="spider_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="simulate-potential-outcomes" class="level3" data-number="6.1.4">
+<h3 data-number="6.1.4" class="anchored" data-anchor-id="simulate-potential-outcomes"><span class="header-section-number">6.1.4</span> Simulate potential outcomes</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Y1_0, Y1_1</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">2</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"Y1_0"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"Y1_1"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span> <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>H3 <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>T3)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span> <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>H3 <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>T3)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.ids, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.treatStatus)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.ids, <span class="at">config =</span> cfg)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>df.outcomes <span class="ot">=</span> df.treatStatus <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(unit, time)`</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.outcomes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  H1   H2   H3    S   T1   T2   T3    P    D Y1_0 Y1_1 
+0.55 0.56 0.49 0.54 0.42 0.78 0.47 0.61 0.33 1.18 0.18 
+  H1   H2   H3    S   T1   T2   T3    P    D Y1_0 Y1_1 
+0.50 0.50 0.50 0.50 0.49 0.41 0.50 0.49 0.47 1.02 1.03 
+        H1   H2    H3     S    T1    T2    T3     P     D  Y1_0  Y1_1
+H1    1.00 0.13  0.00  0.05  0.00  0.00  0.00  0.00  0.03 -0.05 -0.05
+H2    0.13 1.00  0.14  0.03  0.00  0.00  0.00  0.00  0.02  0.00  0.02
+H3    0.00 0.14  1.00 -0.06  0.00  0.00  0.00  0.00 -0.04  0.14  0.15
+S     0.05 0.03 -0.06  1.00  0.00  0.00  0.00  0.00  0.65 -0.01  0.00
+T1    0.00 0.00  0.00  0.00  1.00  0.06 -0.07  0.06  0.03 -0.06 -0.06
+T2    0.00 0.00  0.00  0.00  0.06  1.00 -0.08  0.02  0.01 -0.03  0.00
+T3    0.00 0.00  0.00  0.00 -0.07 -0.08  1.00 -0.07 -0.04  0.14  0.15
+P     0.00 0.00  0.00  0.00  0.06  0.02 -0.07  1.00  0.56  0.00 -0.02
+D     0.03 0.02 -0.04  0.65  0.03  0.01 -0.04  0.56  1.00 -0.01 -0.02
+Y1_0 -0.05 0.00  0.14 -0.01 -0.06 -0.03  0.14  0.00 -0.01  1.00  0.05
+Y1_1 -0.05 0.02  0.15  0.00 -0.06  0.00  0.15 -0.02 -0.02  0.05  1.00</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="sec-estimation" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Estimation</h1>
+<!-- TODO: difference-in-differences estimators; stacked and staggered
+     designs; mediation analysis estimators -->
+<hr>
+</section>
+<section id="sec-inference" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Inference</h1>
+<!-- TODO: cluster-robust and spatially-adjusted standard errors; permutation
+     inference; sensitivity analysis -->
+<hr>
+</section>
+<section id="sec-conclusion" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Conclusion</h1>
+<!-- TODO -->
+<hr>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<!-- -->
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><span class="math inline">\(\Phi(\cdot)\)</span> denotes the standard normal cumulative distribution function.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb18" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "SPIDER: A Unified Framework for Policy-relevant Causal Research in the Social Sciences"</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Jeff Wu"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-depth: 3</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">    toc-location: left</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">    number-sections: true</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">    html-math-method: mathjax</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">    css: styles.css</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># csl: apa.csl</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="an">engine:</span><span class="co"> knitr</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> </span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co">  markdown: </span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co">    wrap: 72</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages here as the paper develops</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"C:/Users/jzw121/OneDrive - Imperial College London/18 GitHub repo/spider/scripts/dev_setup.R"</span>)</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Abstract {.unnumbered}</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## **Keywords:**</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction {#sec-introduction}</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>We propose the SPIDER framework for policy-relevant causal research in</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>the social sciences. The framework organises causal research design into</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>six interrelated modules — **S**uper-population, **P**arameters,</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>**I**dentification, **D**ata, **E**stimation, and infe**R**ence — and</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>makes explicit the assumptions that are routinely left implicit in</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>current practice. This contribution aims to strengthen causal research</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>across the social sciences.</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>Existing guidance on causal research focuses narrowly on specific</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>methods (e.g., Difference-in-Differences, Instrumental Variables) and</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>leaves researchers to choose their approach based on data availability.</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>This inevitably produces fragmented evidence, since different methods</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>target different population parameters. SPIDER offers a more proactive</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>approach. It enables researchers to define the target population and</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>parameters based on their policy question, and guides them to construct</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>an appropriate empirical strategy.</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a><span class="fu"># Setup {#sec-setup}</span></span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a>We introduce the primitives of the SPIDER framework. @sec-index outlines</span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>the indexing system used, and @sec-variables introduces the variables</span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>considered by the framework. This section is deliberately informal,</span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a>helping readers understand the building blocks and context. The</span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>probability-theoretic foundations are deferred to the next sections.</span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a><span class="fu">## Indices {#sec-index}</span></span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a>Let $i$ denote an individual unit of analysis — for example, a</span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a>neighbourhood, a transit stop, a person, or a household. Let $t$ denote</span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a>discrete time, common across all units. The time unit may represent</span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>days, weeks, or months depending on the application.</span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a>Let $k \in <span class="sc">\{</span>1, \ldots, K<span class="sc">\}</span>$ index the outcome variables of interest.</span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a>For example, in a study of low-traffic neighbourhoods (LTNs), $k = 1$</span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a>may index neighbourhood internal traffic volume, $k = 2$ boundary road</span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>traffic volume, and $k = 3$ air pollution levels.</span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variables {#sec-variables}</span></span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>Let $S_i \in \mathcal{S}=<span class="sc">\{</span>s_0, s_1, \ldots, s_m<span class="sc">\}</span>$ denote the treatment</span>
+<span id="cb18-82"><a href="#cb18-82" aria-hidden="true" tabindex="-1"></a>scheme assigned to unit $i$. The baseline scheme $s_0$ corresponds to no</span>
+<span id="cb18-83"><a href="#cb18-83" aria-hidden="true" tabindex="-1"></a>treatment; $s_1, \ldots, s_m$ correspond to $m$ different treatment</span>
+<span id="cb18-84"><a href="#cb18-84" aria-hidden="true" tabindex="-1"></a>arms. Each unit is assigned to exactly one scheme, and assignment is</span>
+<span id="cb18-85"><a href="#cb18-85" aria-hidden="true" tabindex="-1"></a>time-invariant.</span>
+<span id="cb18-86"><a href="#cb18-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-87"><a href="#cb18-87" aria-hidden="true" tabindex="-1"></a>Let $P_t \in \mathcal{P} = <span class="sc">\{</span>p_0, p_1<span class="sc">\}</span>$ denote the implementation</span>
+<span id="cb18-88"><a href="#cb18-88" aria-hidden="true" tabindex="-1"></a>status of the treatment at time $t$. The baseline status $p_0$</span>
+<span id="cb18-89"><a href="#cb18-89" aria-hidden="true" tabindex="-1"></a>corresponds to non-implementation; $p_1$ corresponds to implementation.</span>
+<span id="cb18-90"><a href="#cb18-90" aria-hidden="true" tabindex="-1"></a>Implementation status is common to all units at time $t$.</span>
+<span id="cb18-91"><a href="#cb18-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-92"><a href="#cb18-92" aria-hidden="true" tabindex="-1"></a>Let $D_{i,t} \in \mathcal{D} = <span class="sc">\{</span>d_0, d_1, \ldots, d_M<span class="sc">\}</span>$ denote the</span>
+<span id="cb18-93"><a href="#cb18-93" aria-hidden="true" tabindex="-1"></a>treatment status of unit $i$ at time $t$. The baseline status $d_0$</span>
+<span id="cb18-94"><a href="#cb18-94" aria-hidden="true" tabindex="-1"></a>denotes the absence of treatment -- either because the unit is assigned</span>
+<span id="cb18-95"><a href="#cb18-95" aria-hidden="true" tabindex="-1"></a>to the baseline scheme $s_0$, or the treatment is not implemented $p_0$.</span>
+<span id="cb18-96"><a href="#cb18-96" aria-hidden="true" tabindex="-1"></a>Other statuses $d_1, \ldots, d_M$ denote the presence of treatment under</span>
+<span id="cb18-97"><a href="#cb18-97" aria-hidden="true" tabindex="-1"></a>schemes $s_1, \ldots, s_M$, respectively.</span>
+<span id="cb18-98"><a href="#cb18-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-99"><a href="#cb18-99" aria-hidden="true" tabindex="-1"></a>Let $Y^k_{i,t}(d) \in \mathbb{R}$ denote the $k$-th potential outcome of</span>
+<span id="cb18-100"><a href="#cb18-100" aria-hidden="true" tabindex="-1"></a>interest for unit $i$ at time $t$ under treatment status $D_{i,t} = d$.</span>
+<span id="cb18-101"><a href="#cb18-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-102"><a href="#cb18-102" aria-hidden="true" tabindex="-1"></a>Let $H_i \in \mathcal{H}$ denote a vector of time-invariant</span>
+<span id="cb18-103"><a href="#cb18-103" aria-hidden="true" tabindex="-1"></a>characteristics of unit $i$, such as population density, land use mix,</span>
+<span id="cb18-104"><a href="#cb18-104" aria-hidden="true" tabindex="-1"></a>and proximity to public transport.</span>
+<span id="cb18-105"><a href="#cb18-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-106"><a href="#cb18-106" aria-hidden="true" tabindex="-1"></a>Let $T_t \in \mathcal{T}$ denote a vector of time-varying aggregate</span>
+<span id="cb18-107"><a href="#cb18-107" aria-hidden="true" tabindex="-1"></a>variables common to all units at time $t$, such as oil prices and</span>
+<span id="cb18-108"><a href="#cb18-108" aria-hidden="true" tabindex="-1"></a>day-of-week.</span>
+<span id="cb18-109"><a href="#cb18-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-110"><a href="#cb18-110" aria-hidden="true" tabindex="-1"></a><span class="fu">## Dependency structure {#sec-dependency}</span></span>
+<span id="cb18-111"><a href="#cb18-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-112"><a href="#cb18-112" aria-hidden="true" tabindex="-1"></a>The treatment status $D_{i,t}$ is determined by the treatment scheme</span>
+<span id="cb18-113"><a href="#cb18-113" aria-hidden="true" tabindex="-1"></a>$S_i$ and the implementation status $P_t$, formalised as follows:</span>
+<span id="cb18-114"><a href="#cb18-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-115"><a href="#cb18-115" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb18-116"><a href="#cb18-116" aria-hidden="true" tabindex="-1"></a>D_{i,t} = \begin{cases}</span>
+<span id="cb18-117"><a href="#cb18-117" aria-hidden="true" tabindex="-1"></a>d_0 &amp; \text{if } S_i = s_0 \text{ or } P_t = p_0, <span class="sc">\\</span></span>
+<span id="cb18-118"><a href="#cb18-118" aria-hidden="true" tabindex="-1"></a>d_m &amp; \text{otherwise}</span>
+<span id="cb18-119"><a href="#cb18-119" aria-hidden="true" tabindex="-1"></a>\end{cases} </span>
+<span id="cb18-120"><a href="#cb18-120" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb18-121"><a href="#cb18-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-122"><a href="#cb18-122" aria-hidden="true" tabindex="-1"></a>The potential outcomes $Y^k_{i,t}(d_m)$, for all $k$ and $m$, are</span>
+<span id="cb18-123"><a href="#cb18-123" aria-hidden="true" tabindex="-1"></a>dependent on the unit's characteristics $H_i$, time dependent aggregate</span>
+<span id="cb18-124"><a href="#cb18-124" aria-hidden="true" tabindex="-1"></a>variables $T_t$, and their realised values in the previous time period</span>
+<span id="cb18-125"><a href="#cb18-125" aria-hidden="true" tabindex="-1"></a>$Y^k_{i,t-1}(d_m)$. The exact functional form of this dependence is left</span>
+<span id="cb18-126"><a href="#cb18-126" aria-hidden="true" tabindex="-1"></a>unspecified, allowing for a wide range of dynamic and heterogeneous</span>
+<span id="cb18-127"><a href="#cb18-127" aria-hidden="true" tabindex="-1"></a>effects.</span>
+<span id="cb18-128"><a href="#cb18-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-129"><a href="#cb18-129" aria-hidden="true" tabindex="-1"></a>The overall dependency structure is summarised in the following directed</span>
+<span id="cb18-130"><a href="#cb18-130" aria-hidden="true" tabindex="-1"></a>acyclic graph (DAG):</span>
+<span id="cb18-131"><a href="#cb18-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-134"><a href="#cb18-134" aria-hidden="true" tabindex="-1"></a><span class="in">```{mermaid}</span></span>
+<span id="cb18-135"><a href="#cb18-135" aria-hidden="true" tabindex="-1"></a><span class="in">flowchart LR</span></span>
+<span id="cb18-136"><a href="#cb18-136" aria-hidden="true" tabindex="-1"></a><span class="in">    H[H] --&gt; S[S]</span></span>
+<span id="cb18-137"><a href="#cb18-137" aria-hidden="true" tabindex="-1"></a><span class="in">    T[T] --&gt; P[P]</span></span>
+<span id="cb18-138"><a href="#cb18-138" aria-hidden="true" tabindex="-1"></a><span class="in">    </span></span>
+<span id="cb18-139"><a href="#cb18-139" aria-hidden="true" tabindex="-1"></a><span class="in">    S --&gt; D[D]</span></span>
+<span id="cb18-140"><a href="#cb18-140" aria-hidden="true" tabindex="-1"></a><span class="in">    P --&gt; D</span></span>
+<span id="cb18-141"><a href="#cb18-141" aria-hidden="true" tabindex="-1"></a><span class="in">    </span></span>
+<span id="cb18-142"><a href="#cb18-142" aria-hidden="true" tabindex="-1"></a><span class="in">    H --&gt; Y[Y]</span></span>
+<span id="cb18-143"><a href="#cb18-143" aria-hidden="true" tabindex="-1"></a><span class="in">    T --&gt; Y</span></span>
+<span id="cb18-144"><a href="#cb18-144" aria-hidden="true" tabindex="-1"></a><span class="in">    D --&gt; Y</span></span>
+<span id="cb18-145"><a href="#cb18-145" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-146"><a href="#cb18-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-147"><a href="#cb18-147" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-148"><a href="#cb18-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-149"><a href="#cb18-149" aria-hidden="true" tabindex="-1"></a><span class="fu"># Super-population {#sec-superpopulation}</span></span>
+<span id="cb18-150"><a href="#cb18-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-151"><a href="#cb18-151" aria-hidden="true" tabindex="-1"></a>The super-population is a hypothetical data-generating process that</span>
+<span id="cb18-152"><a href="#cb18-152" aria-hidden="true" tabindex="-1"></a>produces all potential observations. It therefore provides the basis for</span>
+<span id="cb18-153"><a href="#cb18-153" aria-hidden="true" tabindex="-1"></a>cross-study comparability and extrapolating empirical results to future</span>
+<span id="cb18-154"><a href="#cb18-154" aria-hidden="true" tabindex="-1"></a>interventions. Two empirical studies are meaningfully comparable only if</span>
+<span id="cb18-155"><a href="#cb18-155" aria-hidden="true" tabindex="-1"></a>their data are generated by the same underlying process. Similarly,</span>
+<span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a>predicting the effects of future interventions requires that the</span>
+<span id="cb18-157"><a href="#cb18-157" aria-hidden="true" tabindex="-1"></a>underlying process remains stable.</span>
+<span id="cb18-158"><a href="#cb18-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-159"><a href="#cb18-159" aria-hidden="true" tabindex="-1"></a>Formally, SPIDER models the super-population as an infinite stochastic</span>
+<span id="cb18-160"><a href="#cb18-160" aria-hidden="true" tabindex="-1"></a>process, $$</span>
+<span id="cb18-161"><a href="#cb18-161" aria-hidden="true" tabindex="-1"></a>     <span class="sc">\{</span>H_i, S_i, T_t, P_t, </span>
+<span id="cb18-162"><a href="#cb18-162" aria-hidden="true" tabindex="-1"></a>     Y^1_{i,t}(d_0), \ldots, Y^1_{i,t}(d_M), \ldots,</span>
+<span id="cb18-163"><a href="#cb18-163" aria-hidden="true" tabindex="-1"></a>     Y^K_{i,t}(d_0), \ldots, Y^K_{i,t}(d_M) <span class="sc">\}</span>_{i \geq 1, t \geq 1}</span>
+<span id="cb18-164"><a href="#cb18-164" aria-hidden="true" tabindex="-1"></a>$$ with a well-defined joint distribution over these infinite sequences</span>
+<span id="cb18-165"><a href="#cb18-165" aria-hidden="true" tabindex="-1"></a>of random variables. Learning the parameters of this distribution is the</span>
+<span id="cb18-166"><a href="#cb18-166" aria-hidden="true" tabindex="-1"></a>ultimate goal of empirical work.</span>
+<span id="cb18-167"><a href="#cb18-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-168"><a href="#cb18-168" aria-hidden="true" tabindex="-1"></a>A draw from this distribution is an infinite panel — one with</span>
+<span id="cb18-169"><a href="#cb18-169" aria-hidden="true" tabindex="-1"></a>unboundedly many units and time periods. Empirical data are however</span>
+<span id="cb18-170"><a href="#cb18-170" aria-hidden="true" tabindex="-1"></a>always finite. We conceptualise any dataset as a finite window into this</span>
+<span id="cb18-171"><a href="#cb18-171" aria-hidden="true" tabindex="-1"></a>infinite panel. The probability of observing a particular dataset is</span>
+<span id="cb18-172"><a href="#cb18-172" aria-hidden="true" tabindex="-1"></a>therefore the marginal probability that the corresponding panel entries</span>
+<span id="cb18-173"><a href="#cb18-173" aria-hidden="true" tabindex="-1"></a>take the observed values. To fix ideas, consider a study that observes</span>
+<span id="cb18-174"><a href="#cb18-174" aria-hidden="true" tabindex="-1"></a>$N$ neighbourhoods over $L$ years. This dataset is a finite window into</span>
+<span id="cb18-175"><a href="#cb18-175" aria-hidden="true" tabindex="-1"></a>the infinite panel. Inferential work on the super-population, based on</span>
+<span id="cb18-176"><a href="#cb18-176" aria-hidden="true" tabindex="-1"></a>this dataset, proceeds from the marginal distribution of the</span>
+<span id="cb18-177"><a href="#cb18-177" aria-hidden="true" tabindex="-1"></a>corresponding random variables: $H_1, \ldots, H_N$, $T_1, \ldots, T_L$</span>
+<span id="cb18-178"><a href="#cb18-178" aria-hidden="true" tabindex="-1"></a>and so forth.</span>
+<span id="cb18-179"><a href="#cb18-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-180"><a href="#cb18-180" aria-hidden="true" tabindex="-1"></a>This construction licenses flexible cross-study comparisons and</span>
+<span id="cb18-181"><a href="#cb18-181" aria-hidden="true" tabindex="-1"></a>extrapolation. Two datasets of different sample sizes can be viewed as</span>
+<span id="cb18-182"><a href="#cb18-182" aria-hidden="true" tabindex="-1"></a>two finite windows into the same draw or different draws from the</span>
+<span id="cb18-183"><a href="#cb18-183" aria-hidden="true" tabindex="-1"></a>super-population. Empirical results from these two datasets remain</span>
+<span id="cb18-184"><a href="#cb18-184" aria-hidden="true" tabindex="-1"></a>meaningfully comparable, because they target the same super-population.</span>
+<span id="cb18-185"><a href="#cb18-185" aria-hidden="true" tabindex="-1"></a>Findings can also be extrapolated to future interventions provided the</span>
+<span id="cb18-186"><a href="#cb18-186" aria-hidden="true" tabindex="-1"></a>underlying super-population is stable.</span>
+<span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a>To make the super-population tractable for further analytical work and</span>
+<span id="cb18-189"><a href="#cb18-189" aria-hidden="true" tabindex="-1"></a>empirical applications, we impose two structural assumptions. Firstly,</span>
+<span id="cb18-190"><a href="#cb18-190" aria-hidden="true" tabindex="-1"></a>we assume that the sequence of unit characteristics and treatment</span>
+<span id="cb18-191"><a href="#cb18-191" aria-hidden="true" tabindex="-1"></a>schemes $<span class="sc">\{</span>H_i, S_i<span class="sc">\}</span>_{i \geq 1}$ is independent of the sequence of time</span>
+<span id="cb18-192"><a href="#cb18-192" aria-hidden="true" tabindex="-1"></a>characteristics and implementation status $<span class="sc">\{</span>T_t, P_t<span class="sc">\}</span>_{t \geq 1}$.</span>
+<span id="cb18-193"><a href="#cb18-193" aria-hidden="true" tabindex="-1"></a>Dependencies within each sequence are permitted, i.e., $S_i$ may be</span>
+<span id="cb18-194"><a href="#cb18-194" aria-hidden="true" tabindex="-1"></a>correlated with $H_i$ or $S_{i+1}$. For example, in a LTN study, a</span>
+<span id="cb18-195"><a href="#cb18-195" aria-hidden="true" tabindex="-1"></a>neighbourhood's assigned treatment scheme ($S_i$) may depend on the</span>
+<span id="cb18-196"><a href="#cb18-196" aria-hidden="true" tabindex="-1"></a>number of traffic lights on its boundary roads ($H_i$). Neighbourhoods</span>
+<span id="cb18-197"><a href="#cb18-197" aria-hidden="true" tabindex="-1"></a>with more traffic lights may experience greater rat-running and</span>
+<span id="cb18-198"><a href="#cb18-198" aria-hidden="true" tabindex="-1"></a>therefore be assigned to a more intensive filtering scheme.</span>
+<span id="cb18-199"><a href="#cb18-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-200"><a href="#cb18-200" aria-hidden="true" tabindex="-1"></a>Secondly, we permit potential outcomes $Y^k_{i,t}(d_m)$, for all $k,m$,</span>
+<span id="cb18-201"><a href="#cb18-201" aria-hidden="true" tabindex="-1"></a>to depend on the unit characteristics $H_i$ and time characteristics</span>
+<span id="cb18-202"><a href="#cb18-202" aria-hidden="true" tabindex="-1"></a>$T_t$. Fixing $k, i, t$, potential outcomes are correlated with one</span>
+<span id="cb18-203"><a href="#cb18-203" aria-hidden="true" tabindex="-1"></a>another only through this shared dependence on $H_i$ and $T_t$. However,</span>
+<span id="cb18-204"><a href="#cb18-204" aria-hidden="true" tabindex="-1"></a>fixing $m,i,t$, we additionally permit dependencies between potential</span>
+<span id="cb18-205"><a href="#cb18-205" aria-hidden="true" tabindex="-1"></a>outcomes of different types $k$ that are not captured by $H_i$ and</span>
+<span id="cb18-206"><a href="#cb18-206" aria-hidden="true" tabindex="-1"></a>$T_t$. For example, in an LTN study, the air pollution levels ($k=2$) is</span>
+<span id="cb18-207"><a href="#cb18-207" aria-hidden="true" tabindex="-1"></a>dependent on traffic volume ($k=1$) even after conditioning on unit and</span>
+<span id="cb18-208"><a href="#cb18-208" aria-hidden="true" tabindex="-1"></a>time characteristics. In other words, holding unit and time</span>
+<span id="cb18-209"><a href="#cb18-209" aria-hidden="true" tabindex="-1"></a>characteristics fixed, increasing internal traffic volume may still</span>
+<span id="cb18-210"><a href="#cb18-210" aria-hidden="true" tabindex="-1"></a>increase air pollution levels.</span>
+<span id="cb18-211"><a href="#cb18-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-212"><a href="#cb18-212" aria-hidden="true" tabindex="-1"></a>Together, these assumptions prevent the model from becoming intractable</span>
+<span id="cb18-213"><a href="#cb18-213" aria-hidden="true" tabindex="-1"></a>by ruling out unrestricted mutual dependence (i.e., everything depends</span>
+<span id="cb18-214"><a href="#cb18-214" aria-hidden="true" tabindex="-1"></a>on everything). Nonetheless, they still leave a wide range of dependency</span>
+<span id="cb18-215"><a href="#cb18-215" aria-hidden="true" tabindex="-1"></a>structures open for applied researchers to specify based on their</span>
+<span id="cb18-216"><a href="#cb18-216" aria-hidden="true" tabindex="-1"></a>substantive knowledge of the system under study.</span>
+<span id="cb18-217"><a href="#cb18-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-218"><a href="#cb18-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb18-219"><a href="#cb18-219" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;!-- Comment out</span></span>
+<span id="cb18-220"><a href="#cb18-220" aria-hidden="true" tabindex="-1"></a><span class="in">The elements in $T_t$ are generally random variables. Some of these,</span></span>
+<span id="cb18-221"><a href="#cb18-221" aria-hidden="true" tabindex="-1"></a><span class="in">however, may be deterministic in nature, such as day-of-week or seasonal</span></span>
+<span id="cb18-222"><a href="#cb18-222" aria-hidden="true" tabindex="-1"></a><span class="in">indicators. That is, given the time index $t$, the value of such a</span></span>
+<span id="cb18-223"><a href="#cb18-223" aria-hidden="true" tabindex="-1"></a><span class="in">variable is fully determined. They are accommodated as degenerate</span></span>
+<span id="cb18-224"><a href="#cb18-224" aria-hidden="true" tabindex="-1"></a><span class="in">special cases. For example, if $t$ indexes days and $t=1$ is a Sunday,</span></span>
+<span id="cb18-225"><a href="#cb18-225" aria-hidden="true" tabindex="-1"></a><span class="in">then the day-of-week random variable has a point-mass distribution on</span></span>
+<span id="cb18-226"><a href="#cb18-226" aria-hidden="true" tabindex="-1"></a><span class="in">the value "Sunday" at $t=1$, "Monday" at $t=2$, and so on.</span></span>
+<span id="cb18-227"><a href="#cb18-227" aria-hidden="true" tabindex="-1"></a><span class="in">--&gt;</span></span>
+<span id="cb18-228"><a href="#cb18-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-229"><a href="#cb18-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-230"><a href="#cb18-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## Running example</span></span>
+<span id="cb18-231"><a href="#cb18-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-232"><a href="#cb18-232" aria-hidden="true" tabindex="-1"></a>To make the discussion concrete, we make use of a running example</span>
+<span id="cb18-233"><a href="#cb18-233" aria-hidden="true" tabindex="-1"></a>throughout the paper. In this example, the super-population consists of</span>
+<span id="cb18-234"><a href="#cb18-234" aria-hidden="true" tabindex="-1"></a>three time-invariant variables ($H^{1}_{i}, H^{2}_{i}, H^{3}_{i}$) and</span>
+<span id="cb18-235"><a href="#cb18-235" aria-hidden="true" tabindex="-1"></a>three unit-invariant variables ($T^{1}_{t}, T^{2}_{t}, T^{3}_t$). Their</span>
+<span id="cb18-236"><a href="#cb18-236" aria-hidden="true" tabindex="-1"></a>distributions are given in @tbl-independent-vars.</span>
+<span id="cb18-237"><a href="#cb18-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-238"><a href="#cb18-238" aria-hidden="true" tabindex="-1"></a>| Variables | Marginal Distribution |</span>
+<span id="cb18-239"><a href="#cb18-239" aria-hidden="true" tabindex="-1"></a>|------------------------------------|------------------------------------|</span>
+<span id="cb18-240"><a href="#cb18-240" aria-hidden="true" tabindex="-1"></a>| $H^{1}_{i}, H^{2}_{i}, H^{3}_{i}$ | Bernoulli (0.5) |</span>
+<span id="cb18-241"><a href="#cb18-241" aria-hidden="true" tabindex="-1"></a>| $T^{1}_{t}, T^{2}_{t}$ | Bernoulli (0.5) |</span>
+<span id="cb18-242"><a href="#cb18-242" aria-hidden="true" tabindex="-1"></a>| $T^{3}_t$ | Bernoulli ($\pi_t$), where $\pi_t = \Phi\left(0.01*(t-1)\right)$ <span class="ot">[^1]</span> |</span>
+<span id="cb18-243"><a href="#cb18-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-244"><a href="#cb18-244" aria-hidden="true" tabindex="-1"></a>: Independent variables {#tbl-independent-vars}</span>
+<span id="cb18-245"><a href="#cb18-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-246"><a href="#cb18-246" aria-hidden="true" tabindex="-1"></a><span class="ot">[^1]: </span>$\Phi(\cdot)$ denotes the standard normal cumulative distribution</span>
+<span id="cb18-247"><a href="#cb18-247" aria-hidden="true" tabindex="-1"></a>    function.</span>
+<span id="cb18-248"><a href="#cb18-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-249"><a href="#cb18-249" aria-hidden="true" tabindex="-1"></a>To keep the example simple and illustrative, all the independent</span>
+<span id="cb18-250"><a href="#cb18-250" aria-hidden="true" tabindex="-1"></a>variables are binary. The means of $H^1_i, H^2_i, H^3_i, T^1_t, T^2_t$</span>
+<span id="cb18-251"><a href="#cb18-251" aria-hidden="true" tabindex="-1"></a>are all fixed at 0.5. The mean of $T^3_t$ increases over time, starting</span>
+<span id="cb18-252"><a href="#cb18-252" aria-hidden="true" tabindex="-1"></a>from 0.5 at $t=1$ and approaching 1 as $t$ increases.</span>
+<span id="cb18-253"><a href="#cb18-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-254"><a href="#cb18-254" aria-hidden="true" tabindex="-1"></a>The treatment scheme $S_i$, implementation status $P_t$ are binary</span>
+<span id="cb18-255"><a href="#cb18-255" aria-hidden="true" tabindex="-1"></a>variables, and potential outcomes $Y^1_{i,t}(d_0), Y^1_{i,t}(d_1)$ are</span>
+<span id="cb18-256"><a href="#cb18-256" aria-hidden="true" tabindex="-1"></a>given by: $$</span>
+<span id="cb18-257"><a href="#cb18-257" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb18-258"><a href="#cb18-258" aria-hidden="true" tabindex="-1"></a>S_{i} &amp;= \mathbb{1}<span class="sc">\{</span>-0.1*H^1_i + 0.2*H^2_i + \epsilon &gt; 0<span class="sc">\}</span> <span class="sc">\\</span></span>
+<span id="cb18-259"><a href="#cb18-259" aria-hidden="true" tabindex="-1"></a>P_{t} &amp;= \mathbb{1}<span class="sc">\{</span>-0.1*T^1_t + 0.2*T^2_t + \epsilon &gt; 0<span class="sc">\}</span> <span class="sc">\\</span></span>
+<span id="cb18-260"><a href="#cb18-260" aria-hidden="true" tabindex="-1"></a>Y^1_{i,t}(d_0) &amp;= 1 - 0.1*H^1_i + 0.3*H^3_i - 0.1*T^1_t + 0.3*T^3_t + \epsilon <span class="sc">\\</span></span>
+<span id="cb18-261"><a href="#cb18-261" aria-hidden="true" tabindex="-1"></a>Y^1_{i,t}(d_1) &amp;= 0 - 0.1*H^1_i + 0.3*H^3_i - 0.1*T^1_t + 0.3*T^3_t + \epsilon </span>
+<span id="cb18-262"><a href="#cb18-262" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb18-263"><a href="#cb18-263" aria-hidden="true" tabindex="-1"></a>$$ where $\epsilon$ is a standard normal error term.</span>
+<span id="cb18-264"><a href="#cb18-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-265"><a href="#cb18-265" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-266"><a href="#cb18-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-267"><a href="#cb18-267" aria-hidden="true" tabindex="-1"></a><span class="fu"># Parameters {#sec-parameters}</span></span>
+<span id="cb18-268"><a href="#cb18-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-269"><a href="#cb18-269" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- </span><span class="al">TODO</span><span class="co">: define causal parameters --&gt;</span></span>
+<span id="cb18-270"><a href="#cb18-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-271"><a href="#cb18-271" aria-hidden="true" tabindex="-1"></a>The most poicy-relevant causal parameters are the (1) average treatment</span>
+<span id="cb18-272"><a href="#cb18-272" aria-hidden="true" tabindex="-1"></a>effects (ATEs) (2) average treatment effects on the treated (ATTs). They</span>
+<span id="cb18-273"><a href="#cb18-273" aria-hidden="true" tabindex="-1"></a>are formally defined as follows.</span>
+<span id="cb18-274"><a href="#cb18-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-275"><a href="#cb18-275" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-276"><a href="#cb18-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-277"><a href="#cb18-277" aria-hidden="true" tabindex="-1"></a><span class="fu"># Identification {#sec-identification}</span></span>
+<span id="cb18-278"><a href="#cb18-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-279"><a href="#cb18-279" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb18-280"><a href="#cb18-280" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;!-- TODO: parallel trends assumption and extensions; handling of staggered</span></span>
+<span id="cb18-281"><a href="#cb18-281" aria-hidden="true" tabindex="-1"></a><span class="in">     adoption; addressing spillovers; identification of mediation estimands --&gt;</span></span>
+<span id="cb18-282"><a href="#cb18-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-283"><a href="#cb18-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-284"><a href="#cb18-284" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-285"><a href="#cb18-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-286"><a href="#cb18-286" aria-hidden="true" tabindex="-1"></a><span class="fu"># Data {#sec-data}</span></span>
+<span id="cb18-287"><a href="#cb18-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-288"><a href="#cb18-288" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb18-289"><a href="#cb18-289" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;!-- TODO: sampling design; construction of the analysis dataset; variable</span></span>
+<span id="cb18-290"><a href="#cb18-290" aria-hidden="true" tabindex="-1"></a><span class="in">     measurement; pre-processing decisions --&gt;</span></span>
+<span id="cb18-291"><a href="#cb18-291" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-292"><a href="#cb18-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-293"><a href="#cb18-293" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
+<span id="cb18-294"><a href="#cb18-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-295"><a href="#cb18-295" aria-hidden="true" tabindex="-1"></a><span class="fu">### Simulate unit-dependent variables</span></span>
+<span id="cb18-296"><a href="#cb18-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-299"><a href="#cb18-299" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-300"><a href="#cb18-300" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb18-301"><a href="#cb18-301" aria-hidden="true" tabindex="-1"></a>df.id.unit <span class="ot">=</span> <span class="fu">genIds</span>(<span class="at">dim1.size =</span> <span class="dv">100</span>, <span class="at">dim1.name =</span> <span class="st">"unit"</span>)</span>
+<span id="cb18-302"><a href="#cb18-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-303"><a href="#cb18-303" aria-hidden="true" tabindex="-1"></a><span class="co"># H1, H2, H3</span></span>
+<span id="cb18-304"><a href="#cb18-304" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">3</span>)</span>
+<span id="cb18-305"><a href="#cb18-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-306"><a href="#cb18-306" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H1"</span> <span class="co"># affect S</span></span>
+<span id="cb18-307"><a href="#cb18-307" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H2"</span> <span class="co"># affect Y</span></span>
+<span id="cb18-308"><a href="#cb18-308" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"H3"</span> <span class="co"># confounder: affect both S,Y</span></span>
+<span id="cb18-309"><a href="#cb18-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-310"><a href="#cb18-310" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb18-311"><a href="#cb18-311" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb18-312"><a href="#cb18-312" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb18-313"><a href="#cb18-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-314"><a href="#cb18-314" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-315"><a href="#cb18-315" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-316"><a href="#cb18-316" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-317"><a href="#cb18-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-318"><a href="#cb18-318" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-319"><a href="#cb18-319" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-320"><a href="#cb18-320" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-321"><a href="#cb18-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-322"><a href="#cb18-322" aria-hidden="true" tabindex="-1"></a>df.ivar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb18-323"><a href="#cb18-323" aria-hidden="true" tabindex="-1"></a>df.ivar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb18-324"><a href="#cb18-324" aria-hidden="true" tabindex="-1"></a>df.ivar     <span class="ot">=</span> <span class="fu">genVars</span>(df.ivar.det, df.ivar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb18-325"><a href="#cb18-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-326"><a href="#cb18-326" aria-hidden="true" tabindex="-1"></a><span class="co"># S</span></span>
+<span id="cb18-327"><a href="#cb18-327" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">1</span>)</span>
+<span id="cb18-328"><a href="#cb18-328" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"S"</span></span>
+<span id="cb18-329"><a href="#cb18-329" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>( (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.2</span>)<span class="sc">*</span>H2 )</span>
+<span id="cb18-330"><a href="#cb18-330" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-331"><a href="#cb18-331" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-332"><a href="#cb18-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-333"><a href="#cb18-333" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.unit, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.ivar)</span>
+<span id="cb18-334"><a href="#cb18-334" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.unit, <span class="at">config =</span> cfg)</span>
+<span id="cb18-335"><a href="#cb18-335" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb18-336"><a href="#cb18-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-337"><a href="#cb18-337" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb18-338"><a href="#cb18-338" aria-hidden="true" tabindex="-1"></a>df.var.site <span class="ot">=</span> df.ivar <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar)</span>
+<span id="cb18-339"><a href="#cb18-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-340"><a href="#cb18-340" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb18-341"><a href="#cb18-341" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.var.site)</span>
+<span id="cb18-342"><a href="#cb18-342" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-343"><a href="#cb18-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-344"><a href="#cb18-344" aria-hidden="true" tabindex="-1"></a><span class="fu">### Simulate time-dependent variables</span></span>
+<span id="cb18-345"><a href="#cb18-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-348"><a href="#cb18-348" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-349"><a href="#cb18-349" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb18-350"><a href="#cb18-350" aria-hidden="true" tabindex="-1"></a>df.id.time <span class="ot">=</span> <span class="fu">genIds</span>(<span class="at">dim1.size =</span> <span class="dv">100</span>, <span class="at">dim1.name =</span> <span class="st">"time"</span>)</span>
+<span id="cb18-351"><a href="#cb18-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-352"><a href="#cb18-352" aria-hidden="true" tabindex="-1"></a><span class="co"># T1, T2, T3</span></span>
+<span id="cb18-353"><a href="#cb18-353" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">3</span>)</span>
+<span id="cb18-354"><a href="#cb18-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-355"><a href="#cb18-355" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T1"</span></span>
+<span id="cb18-356"><a href="#cb18-356" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T2"</span></span>
+<span id="cb18-357"><a href="#cb18-357" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"T3"</span></span>
+<span id="cb18-358"><a href="#cb18-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-359"><a href="#cb18-359" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb18-360"><a href="#cb18-360" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(time<span class="sc">*</span><span class="fl">0.01</span>)</span>
+<span id="cb18-361"><a href="#cb18-361" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span>)</span>
+<span id="cb18-362"><a href="#cb18-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-363"><a href="#cb18-363" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-364"><a href="#cb18-364" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-365"><a href="#cb18-365" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-366"><a href="#cb18-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-367"><a href="#cb18-367" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-368"><a href="#cb18-368" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-369"><a href="#cb18-369" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var3<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-370"><a href="#cb18-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-371"><a href="#cb18-371" aria-hidden="true" tabindex="-1"></a>df.ivar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb18-372"><a href="#cb18-372" aria-hidden="true" tabindex="-1"></a>df.ivar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb18-373"><a href="#cb18-373" aria-hidden="true" tabindex="-1"></a>df.ivar     <span class="ot">=</span> <span class="fu">genVars</span>(df.ivar.det, df.ivar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb18-374"><a href="#cb18-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-375"><a href="#cb18-375" aria-hidden="true" tabindex="-1"></a><span class="co"># P</span></span>
+<span id="cb18-376"><a href="#cb18-376" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">1</span>)</span>
+<span id="cb18-377"><a href="#cb18-377" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"P"</span></span>
+<span id="cb18-378"><a href="#cb18-378" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>( (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.2</span>)<span class="sc">*</span>T2 )</span>
+<span id="cb18-379"><a href="#cb18-379" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-380"><a href="#cb18-380" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>link <span class="ot">=</span> <span class="st">"probit"</span></span>
+<span id="cb18-381"><a href="#cb18-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-382"><a href="#cb18-382" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.id.time, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.ivar)</span>
+<span id="cb18-383"><a href="#cb18-383" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.id.time, <span class="at">config =</span> cfg)</span>
+<span id="cb18-384"><a href="#cb18-384" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg, <span class="at">ret_latent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-385"><a href="#cb18-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-386"><a href="#cb18-386" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb18-387"><a href="#cb18-387" aria-hidden="true" tabindex="-1"></a>df.var.time <span class="ot">=</span> df.ivar <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar<span class="sc">$</span>final)</span>
+<span id="cb18-388"><a href="#cb18-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-389"><a href="#cb18-389" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb18-390"><a href="#cb18-390" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.var.time, <span class="at">exclude_cols =</span> <span class="fu">c</span>(<span class="st">"unit"</span>))</span>
+<span id="cb18-391"><a href="#cb18-391" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-392"><a href="#cb18-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-393"><a href="#cb18-393" aria-hidden="true" tabindex="-1"></a><span class="fu">### Generate treatment status</span></span>
+<span id="cb18-394"><a href="#cb18-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-397"><a href="#cb18-397" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-398"><a href="#cb18-398" aria-hidden="true" tabindex="-1"></a><span class="co"># generate ids</span></span>
+<span id="cb18-399"><a href="#cb18-399" aria-hidden="true" tabindex="-1"></a>df.ids <span class="ot">=</span> <span class="fu">genIds</span>(df.id.unit, df.id.time)</span>
+<span id="cb18-400"><a href="#cb18-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-401"><a href="#cb18-401" aria-hidden="true" tabindex="-1"></a><span class="co"># create treatment status D</span></span>
+<span id="cb18-402"><a href="#cb18-402" aria-hidden="true" tabindex="-1"></a>df.treatStatus <span class="ot">=</span> df.ids <span class="sc">%&gt;%</span></span>
+<span id="cb18-403"><a href="#cb18-403" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.var.site) <span class="sc">%&gt;%</span></span>
+<span id="cb18-404"><a href="#cb18-404" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df.var.time) <span class="sc">%&gt;%</span></span>
+<span id="cb18-405"><a href="#cb18-405" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">D =</span> <span class="fu">if_else</span>(S <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> P <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb18-406"><a href="#cb18-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-407"><a href="#cb18-407" aria-hidden="true" tabindex="-1"></a><span class="co"># plot panel</span></span>
+<span id="cb18-408"><a href="#cb18-408" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(panelView)</span>
+<span id="cb18-409"><a href="#cb18-409" aria-hidden="true" tabindex="-1"></a><span class="co"># create a dummy Y</span></span>
+<span id="cb18-410"><a href="#cb18-410" aria-hidden="true" tabindex="-1"></a><span class="co"># df.treatStatus = df.treatStatus %&gt;% mutate(Y = 1)</span></span>
+<span id="cb18-411"><a href="#cb18-411" aria-hidden="true" tabindex="-1"></a><span class="fu">panelview</span>(<span class="dv">1</span> <span class="sc">~</span> D, <span class="at">data =</span> df.treatStatus, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"unit"</span>,<span class="st">"time"</span>),</span>
+<span id="cb18-412"><a href="#cb18-412" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.lab =</span> <span class="st">"time"</span>, <span class="at">xlab =</span> <span class="st">"Time"</span>, <span class="at">ylab =</span> <span class="st">"Site"</span>,</span>
+<span id="cb18-413"><a href="#cb18-413" aria-hidden="true" tabindex="-1"></a>  <span class="at">gridOff =</span> <span class="cn">TRUE</span>, <span class="at">by.timing =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-414"><a href="#cb18-414" aria-hidden="true" tabindex="-1"></a>  <span class="at">background =</span> <span class="st">"white"</span>, <span class="at">main =</span> <span class="st">"Simulated Data: Treatment Status"</span>)</span>
+<span id="cb18-415"><a href="#cb18-415" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-416"><a href="#cb18-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-417"><a href="#cb18-417" aria-hidden="true" tabindex="-1"></a><span class="fu">### Simulate potential outcomes</span></span>
+<span id="cb18-418"><a href="#cb18-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-421"><a href="#cb18-421" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb18-422"><a href="#cb18-422" aria-hidden="true" tabindex="-1"></a><span class="co"># Y1_0, Y1_1</span></span>
+<span id="cb18-423"><a href="#cb18-423" aria-hidden="true" tabindex="-1"></a>cfg <span class="ot">=</span> <span class="fu">defaultVarCfg</span>(<span class="dv">2</span>)</span>
+<span id="cb18-424"><a href="#cb18-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-425"><a href="#cb18-425" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"Y1_0"</span></span>
+<span id="cb18-426"><a href="#cb18-426" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>name <span class="ot">=</span> <span class="st">"Y1_1"</span></span>
+<span id="cb18-427"><a href="#cb18-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-428"><a href="#cb18-428" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span> <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>H3 <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>T3)</span>
+<span id="cb18-429"><a href="#cb18-429" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>mean <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">0</span> <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>H1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>H3 <span class="sc">+</span> (<span class="sc">-</span><span class="fl">0.1</span>)<span class="sc">*</span>T1 <span class="sc">+</span> (<span class="fl">0.3</span>)<span class="sc">*</span>T3)</span>
+<span id="cb18-430"><a href="#cb18-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-431"><a href="#cb18-431" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var1<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-432"><a href="#cb18-432" aria-hidden="true" tabindex="-1"></a>cfg<span class="sc">$</span>var2<span class="sc">$</span>lvar<span class="sc">$</span>sd <span class="ot">=</span> rlang<span class="sc">::</span><span class="fu">quo</span>(<span class="dv">1</span>)</span>
+<span id="cb18-433"><a href="#cb18-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-434"><a href="#cb18-434" aria-hidden="true" tabindex="-1"></a>df.dvar.det <span class="ot">=</span> <span class="fu">genLvarDet</span>(df.ids, <span class="at">config =</span> cfg, <span class="at">ivar =</span> df.treatStatus)</span>
+<span id="cb18-435"><a href="#cb18-435" aria-hidden="true" tabindex="-1"></a>df.dvar.sto <span class="ot">=</span> <span class="fu">simLvarSto</span>(df.ids, <span class="at">config =</span> cfg)</span>
+<span id="cb18-436"><a href="#cb18-436" aria-hidden="true" tabindex="-1"></a>df.dvar     <span class="ot">=</span> <span class="fu">genVars</span>(df.dvar.det, df.dvar.sto, <span class="at">config =</span> cfg)</span>
+<span id="cb18-437"><a href="#cb18-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-438"><a href="#cb18-438" aria-hidden="true" tabindex="-1"></a><span class="co"># Final</span></span>
+<span id="cb18-439"><a href="#cb18-439" aria-hidden="true" tabindex="-1"></a>df.outcomes <span class="ot">=</span> df.treatStatus <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(df.dvar)</span>
+<span id="cb18-440"><a href="#cb18-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-441"><a href="#cb18-441" aria-hidden="true" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb18-442"><a href="#cb18-442" aria-hidden="true" tabindex="-1"></a><span class="fu">summariseSim</span>(df.outcomes)</span>
+<span id="cb18-443"><a href="#cb18-443" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-444"><a href="#cb18-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-445"><a href="#cb18-445" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-446"><a href="#cb18-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-447"><a href="#cb18-447" aria-hidden="true" tabindex="-1"></a><span class="fu"># Estimation {#sec-estimation}</span></span>
+<span id="cb18-448"><a href="#cb18-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-449"><a href="#cb18-449" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb18-450"><a href="#cb18-450" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;!-- TODO: difference-in-differences estimators; stacked and staggered</span></span>
+<span id="cb18-451"><a href="#cb18-451" aria-hidden="true" tabindex="-1"></a><span class="in">     designs; mediation analysis estimators --&gt;</span></span>
+<span id="cb18-452"><a href="#cb18-452" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-453"><a href="#cb18-453" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-454"><a href="#cb18-454" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-455"><a href="#cb18-455" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-456"><a href="#cb18-456" aria-hidden="true" tabindex="-1"></a><span class="fu"># Inference {#sec-inference}</span></span>
+<span id="cb18-457"><a href="#cb18-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-458"><a href="#cb18-458" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb18-459"><a href="#cb18-459" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;!-- TODO: cluster-robust and spatially-adjusted standard errors; permutation</span></span>
+<span id="cb18-460"><a href="#cb18-460" aria-hidden="true" tabindex="-1"></a><span class="in">     inference; sensitivity analysis --&gt;</span></span>
+<span id="cb18-461"><a href="#cb18-461" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb18-462"><a href="#cb18-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-463"><a href="#cb18-463" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-464"><a href="#cb18-464" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-465"><a href="#cb18-465" aria-hidden="true" tabindex="-1"></a><span class="fu"># Conclusion {#sec-conclusion}</span></span>
+<span id="cb18-466"><a href="#cb18-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-467"><a href="#cb18-467" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- </span><span class="al">TODO</span><span class="co"> --&gt;</span></span>
+<span id="cb18-468"><a href="#cb18-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-469"><a href="#cb18-469" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb18-470"><a href="#cb18-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-471"><a href="#cb18-471" aria-hidden="true" tabindex="-1"></a><span class="fu"># References {.unnumbered}</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

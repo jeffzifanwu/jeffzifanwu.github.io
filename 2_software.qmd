@@ -7,4 +7,6 @@ title-block-banner: true
 
 R package: [dataHelper](https://github.com/jeffzifanwu/dataHelper)
 
+R package: [spider](https://github.com/jeffzifanwu/spider)
+
 R repository template: [rProject](https://github.com/jeffzifanwu/rProject)

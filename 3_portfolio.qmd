@@ -4,16 +4,29 @@ format: html
 page-layout: full
 title-block-banner: true
 resources:
+  - 3_portfolio/SPIDER/spider_files/**
   - 3_portfolio/FECR25/synData7_FECR25_files/**
   - 3_portfolio/CRSE25/synData6_clusterRobustStandardErrors_files/**
-  - 3_portfolio/MBO25/synData5_binaryOutcomes_files/**
+  # - 3_portfolio/MBO25/synData5_binaryOutcomes_files/**
 ---
+
+[SPIDER](3_portfolio/SPIDER/spider.html)
+
+This post introduces SPIDER: A Unified Framework for Causal Research in the Social Sciences.
+
+Keywords: causal inference, SPIDER
+
+<!-- Code stored in spider -->
+
+------------------------------------------------------------------------
 
 [FECR25](3_portfolio/FECR25/synData7_FECR25.html)
 
 `fixest` and `clubSandwich` are widely used R packages for working with TWFE models. This post demonstrates that `clubSandwich` currently does not support `fixest`-style models in general. However, there are some workarounds that compromise the high-performance algorithms of `fixest` while enabling compatibility with `clubSandwich`.
 
 Keywords: R, TWFE, CRSE
+
+<!-- Code stored in rProject -->
 
 ------------------------------------------------------------------------
 
@@ -23,30 +36,32 @@ Panel data may involve irregular time intervals between observations, leading to
 
 Keywords: panel data, CRSE, TWFE
 
-------------------------------------------------------------------------
+<!-- Code in rProject -->
 
-[MBO25](3_portfolio/MBO25/synData5_binaryOutcomes.html)
+<!-- ------------------------------------------------------------------------ -->
 
-Both Discrete Choice Modelling (DCM) and Generalised Linear Modelling (GLM) frameworks are used to analyse binary outcomes. This post presents the theoretical underpinnings of these modelling frameworks and highlights their similarities.
+<!-- [MBO25](3_portfolio/MBO25/synData5_binaryOutcomes.html) -->
 
-Keywords: DCM, GLM
+<!-- Both Discrete Choice Modelling (DCM) and Generalised Linear Modelling (GLM) frameworks are used to analyse binary outcomes. This post presents the theoretical underpinnings of these modelling frameworks and highlights their similarities. -->
 
-------------------------------------------------------------------------
+<!-- Keywords: DCM, GLM -->
 
-[PRP24](3_portfolio/PRP24/Collinearity%20with%20Proportion%20Predictors.html)
+<!-- ------------------------------------------------------------------------ -->
 
-Diagnosing and addressing collinear issues with proportion predictors.
+<!-- [PRP24](3_portfolio/PRP24/Collinearity%20with%20Proportion%20Predictors.html) -->
 
-Keywords: collinearity, regression
+<!-- Diagnosing and addressing collinear issues with proportion predictors. -->
 
-------------------------------------------------------------------------
+<!-- Keywords: collinearity, regression -->
 
-[SUR24](3_portfolio/SUR24/compareOlsAndSur-20240825.html)
+<!-- ------------------------------------------------------------------------ -->
 
-Comparing OLS and Seemingly Unrelated Regression (SUR) methods in two settings:
+<!-- [SUR24](3_portfolio/SUR24/compareOlsAndSur-20240825.html) -->
 
-1.  Linear regression with panel data;
+<!-- Comparing OLS and Seemingly Unrelated Regression (SUR) methods in two settings: -->
 
-2.  System of linear equations with cross-sectional or longitudinal data.
+<!-- 1.  Linear regression with panel data; -->
 
-Keywords: panel data, system of equations, SUR
+<!-- 2.  System of linear equations with cross-sectional or longitudinal data. -->
+
+<!-- Keywords: panel data, system of equations, SUR -->

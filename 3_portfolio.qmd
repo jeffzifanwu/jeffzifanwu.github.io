@@ -12,9 +12,9 @@ resources:
 
 [SPIDER](3_portfolio/SPIDER/spider.html)
 
-This post introduces SPIDER: A Unified Framework for Causal Research in the Social Sciences.
+This post introduces SPIDER: A Potential Outcomes Framework for Policy Design
 
-Keywords: causal inference, SPIDER
+Keywords: causal inference, policy design
 
 <!-- Code stored in spider -->
 

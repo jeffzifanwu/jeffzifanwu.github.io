@@ -18,4 +18,4 @@ about:
       href: https://scholar.google.co.uk/citations?user=FMBJbnwAAAAJ&hl=en&oi=ao
 ---
 
-Welcome to my website! Here, I share [online appendices](onlineAppendices.qmd) for my publications and preprints, along with a [portfolio](portfolio.qmd) of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You'll also find links to my CV, LinkedIn, Google Scholar, and GitHub, offering a comprehensive view of my work and interests.
+Welcome to my website! Here, I share [online appendices](onlineAppendices.qmd) for my publications and preprints, along with a [portfolio](portfolio.qmd) of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You'll also find links to my CV, LinkedIn, Google Scholar, and GitHub.

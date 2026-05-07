@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Jeff Wu",
     "section": "",
-    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my CV, LinkedIn, Google Scholar, and GitHub, offering a comprehensive view of my work and interests."
+    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my CV, LinkedIn, Google Scholar, and GitHub."
   },
   {
     "objectID": "archive/paused_3_portfolio/SUR24/index.html",
@@ -46,14 +46,14 @@
     "href": "3_portfolio.html",
     "title": "Portfolio",
     "section": "",
-    "text": "SPIDER\nThis post introduces SPIDER: A Unified Framework for Causal Research in the Social Sciences.\nKeywords: causal inference, SPIDER\n\nFECR25\nfixest and clubSandwich are widely used R packages for working with TWFE models. This post demonstrates that clubSandwich currently does not support fixest-style models in general. However, there are some workarounds that compromise the high-performance algorithms of fixest while enabling compatibility with clubSandwich.\nKeywords: R, TWFE, CRSE\n\n\nCRSE25\nPanel data may involve irregular time intervals between observations, leading to within-cluster correlation. This post examines how two-way fixed effects (TWFE) models are affected when applied to such data and discusses the use of cluster-robust standard errors (CRSE) to correct for the resulting issues.\nKeywords: panel data, CRSE, TWFE"
+    "text": "SPIDER\nThis post introduces SPIDER: A Potential Outcomes Framework for Policy Design\nKeywords: causal inference, policy design\n\n\nFECR25\nfixest and clubSandwich are widely used R packages for working with TWFE models. This post demonstrates that clubSandwich currently does not support fixest-style models in general. However, there are some workarounds that compromise the high-performance algorithms of fixest while enabling compatibility with clubSandwich.\nKeywords: R, TWFE, CRSE\n\n\nCRSE25\nPanel data may involve irregular time intervals between observations, leading to within-cluster correlation. This post examines how two-way fixed effects (TWFE) models are affected when applied to such data and discusses the use of cluster-robust standard errors (CRSE) to correct for the resulting issues.\nKeywords: panel data, CRSE, TWFE"
   },
   {
     "objectID": "1_cv.html",
     "href": "1_cv.html",
     "title": "CV",
     "section": "",
-    "text": "&lt;p&gt;Download: &lt;a href=\"1_cv/Jeff Wu CV (20260203).pdf\"&gt;Download PDF&lt;/a&gt;.&lt;/p&gt;"
+    "text": "&lt;p&gt;Download: &lt;a href=\"1_cv/Jeff Wu CV (20260505).pdf\"&gt;Download PDF&lt;/a&gt;.&lt;/p&gt;"
   },
   {
     "objectID": "2_software.html",

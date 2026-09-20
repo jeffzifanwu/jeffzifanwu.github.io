@@ -60,7 +60,7 @@
     "href": "2_software.html",
     "title": "Software",
     "section": "",
-    "text": "R package: dataHelper\nR package: spider\nR repository template: rProject"
+    "text": "writeLog"
   },
   {
     "objectID": "4_onlineAppendices.html",

@@ -46,7 +46,7 @@
     "href": "3_portfolio.html",
     "title": "Portfolio",
     "section": "",
-    "text": "SPIDER\nThis post introduces SPIDER: A Potential Outcomes Framework for Policy Design\nKeywords: causal inference, policy design\n\n\nFECR25\nfixest and clubSandwich are widely used R packages for working with TWFE models. This post demonstrates that clubSandwich currently does not support fixest-style models in general. However, there are some workarounds that compromise the high-performance algorithms of fixest while enabling compatibility with clubSandwich.\nKeywords: R, TWFE, CRSE\n\n\nCRSE25\nPanel data may involve irregular time intervals between observations, leading to within-cluster correlation. This post examines how two-way fixed effects (TWFE) models are affected when applied to such data and discusses the use of cluster-robust standard errors (CRSE) to correct for the resulting issues.\nKeywords: panel data, CRSE, TWFE"
+    "text": ""
   },
   {
     "objectID": "1_cv.html",

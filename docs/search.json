@@ -4,28 +4,7 @@
     "href": "index.html",
     "title": "Jeff Wu",
     "section": "",
-    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my CV, LinkedIn, Google Scholar, and GitHub."
-  },
-  {
-    "objectID": "3_portfolio.html",
-    "href": "3_portfolio.html",
-    "title": "Portfolio",
-    "section": "",
-    "text": ""
-  },
-  {
-    "objectID": "1_cv.html",
-    "href": "1_cv.html",
-    "title": "CV",
-    "section": "",
-    "text": ""
-  },
-  {
-    "objectID": "2_software.html",
-    "href": "2_software.html",
-    "title": "Software",
-    "section": "",
-    "text": "writeLog"
+    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my LinkedIn, Google Scholar, and GitHub."
   },
   {
     "objectID": "4_onlineAppendices.html",
@@ -33,5 +12,12 @@
     "title": "Online Appendices",
     "section": "",
     "text": "No matching items"
+  },
+  {
+    "objectID": "2_software.html",
+    "href": "2_software.html",
+    "title": "Software",
+    "section": "",
+    "text": "writeLog"
   }
 ]

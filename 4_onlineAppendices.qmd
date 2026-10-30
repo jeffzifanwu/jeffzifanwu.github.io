@@ -7,5 +7,5 @@ title-block-banner: true
 
 **Impact of Haringey LTNs on traffic count and air pollution**
 
-- [Monitoring report (Imperial), Haringey Council](https://www.minutes.haringey.gov.uk/documents/s148747/Appendix%20A2%20-%20Monitoring%20report%20Imperial.pdf)
-- [Supplementary materials (PDF)](4_onlineAppendices/haringey-ltn/supplementary_materials.pdf)
+- [Monitoring report (ICL) for Haringey Council](https://www.minutes.haringey.gov.uk/documents/s148747/Appendix%20A2%20-%20Monitoring%20report%20Imperial.pdf)
+- [Supplementary materials](4_onlineAppendices/haringey-ltn/supplementary_materials.pdf)

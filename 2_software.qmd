@@ -5,4 +5,4 @@ page-layout: full
 title-block-banner: true
 ---
 
-[writeLog](https://github.com/jeffzifanwu/writeLog.git) is an R package for logging analysis results. Its `writeLog()` function writes the printed output of a named list of R objects to a versioned text file, with each object preceded by its name as a heading.
+[writeLog](https://CRAN.R-project.org/package=writeLog) is an R package, available on CRAN ([source on GitHub](https://github.com/jeffzifanwu/writeLog)), for logging interim and final results in data and analytical pipelines. Its `writeLog()` function saves results to versioned text files, so you can track how they change when code or data change. This helps with debugging and with testing data and model specifications.

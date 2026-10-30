@@ -18,6 +18,6 @@
     "href": "2_software.html",
     "title": "Software",
     "section": "",
-    "text": "writeLog"
+    "text": "writeLog is an R package (available on CRAN) for logging interim results in data and analytical pipelines. Its writeLog() function saves results to versioned text files, so users can track how results change across long pipelines when code or data change. This helps with debugging, experimentation and testing."
   }
 ]

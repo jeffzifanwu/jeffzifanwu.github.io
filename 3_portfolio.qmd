@@ -3,7 +3,14 @@ title: "Portfolio"
 format: html
 page-layout: full
 title-block-banner: true
-listing:
-  contents: 3_portfolio/*.qmd
-  type: grid
 ---
+
+## Transport policy and house prices in London
+
+This project investigates how transport policies affect house prices in London. It uses HM Land Registry Price Paid data for 2016 to 2025, with postcodes located using ONS data. The first stage is exploratory. It asks where prices have pulled ahead of or fallen behind the rest of London. Policy (causal) analyses will follow.
+
+1. [Which London outcodes have outpaced the rest of London?](3_portfolio/london-house-prices/05_all_outcodes.html){target="_blank"}
+2. [A spatial analysis of the outcodes](3_portfolio/london-house-prices/07_outcode_maps.html){target="_blank"}
+3. [Choosing inference procedures (methods)](3_portfolio/london-house-prices/06_placebo_inference.html){target="_blank"}
+
+*Data sources: Contains HM Land Registry data © Crown copyright and database right 2026. Contains OS data © Crown copyright and database right 2024 and 2026. Contains Royal Mail data © Royal Mail copyright and database right 2026. Source: Office for National Statistics licensed under the Open Government Licence v3.0.*

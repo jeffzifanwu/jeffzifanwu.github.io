@@ -1,8 +1,29 @@
 [
   {
-    "objectID": "3_portfolio/london-house-prices.html",
-    "href": "3_portfolio/london-house-prices.html",
-    "title": "Transport policy and house prices in London",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Jeff Wu",
+    "section": "",
+    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my LinkedIn, Google Scholar, and GitHub."
+  },
+  {
+    "objectID": "4_onlineAppendices.html",
+    "href": "4_onlineAppendices.html",
+    "title": "Online Appendices",
+    "section": "",
+    "text": "Impact of Haringey LTNs on traffic count and air pollution\n\nMonitoring report (Imperial), Haringey Council\nSupplementary materials (PDF)"
+  },
+  {
+    "objectID": "3_portfolio.html",
+    "href": "3_portfolio.html",
+    "title": "Portfolio",
+    "section": "",
+    "text": "This project investigates how transport policies affect house prices in London. It uses HM Land Registry Price Paid data for 2016 to 2025, with postcodes located using ONS data. The first stage is exploratory. It asks where prices have pulled ahead of or fallen behind the rest of London. Policy (causal) analyses will follow.\n\nWhich London outcodes have outpaced the rest of London?\nA spatial analysis of the outcodes\nChoosing inference procedures (methods)\n\nData sources: Contains HM Land Registry data © Crown copyright and database right 2026. Contains OS data © Crown copyright and database right 2024 and 2026. Contains Royal Mail data © Royal Mail copyright and database right 2026. Source: Office for National Statistics licensed under the Open Government Licence v3.0."
+  },
+  {
+    "objectID": "3_portfolio.html#transport-policy-and-house-prices-in-london",
+    "href": "3_portfolio.html#transport-policy-and-house-prices-in-london",
+    "title": "Portfolio",
     "section": "",
     "text": "This project investigates how transport policies affect house prices in London. It uses HM Land Registry Price Paid data for 2016 to 2025, with postcodes located using ONS data. The first stage is exploratory. It asks where prices have pulled ahead of or fallen behind the rest of London. Policy (causal) analyses will follow.\n\nWhich London outcodes have outpaced the rest of London?\nA spatial analysis of the outcodes\nChoosing inference procedures (methods)\n\nData sources: Contains HM Land Registry data © Crown copyright and database right 2026. Contains OS data © Crown copyright and database right 2024 and 2026. Contains Royal Mail data © Royal Mail copyright and database right 2026. Source: Office for National Statistics licensed under the Open Government Licence v3.0."
   },
@@ -12,26 +33,5 @@
     "title": "Software",
     "section": "",
     "text": "writeLog is an R package (available on CRAN) for logging interim results in data and analytical pipelines. Its writeLog() function saves results to versioned text files, so users can track how results change across long pipelines when code or data change. This helps with debugging, experimentation and testing."
-  },
-  {
-    "objectID": "3_portfolio.html",
-    "href": "3_portfolio.html",
-    "title": "Portfolio",
-    "section": "",
-    "text": "Transport policy and house prices in London\n\n\nExploratory analysis of London house prices, 2016 to 2025.\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "4_onlineAppendices.html",
-    "href": "4_onlineAppendices.html",
-    "title": "Online Appendices",
-    "section": "",
-    "text": "No matching items"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Jeff Wu",
-    "section": "",
-    "text": "Welcome to my website! Here, I share online appendices for my publications and preprints, along with a portfolio of non-peer-reviewed works from my academic, professional, and personal endeavours — pieces that might not fit the current publishing outlets. You’ll also find links to my LinkedIn, Google Scholar, and GitHub."
   }
 ]

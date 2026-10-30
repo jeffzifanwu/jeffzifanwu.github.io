@@ -3,4 +3,7 @@ title: "Portfolio"
 format: html
 page-layout: full
 title-block-banner: true
+listing:
+  contents: 3_portfolio/*.qmd
+  type: grid
 ---

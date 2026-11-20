@@ -20,4 +20,4 @@ This project investigates how transport policies affect house prices in London. 
 I have learned, applied and developed a range of structural models during my research and training. Most remain unpublished, as they do not fit my available data or I have yet to find suitable data. This project hosts them as a record of my work and for dissemination.
 
 1. [Foundations of microeconomic analysis: from neoclassical theory to utility and profit maximisation](3_portfolio/structural-models/01_foundations_of_microeconomic_analysis.html){target="_blank"}
-2. [Utility Maximisation Model](3_portfolio/structural-models/02_utility_theoretic_consumer_choice_model.html){target="_blank"}
+2. [Utility-theoretic consumer choice model](3_portfolio/structural-models/02_utility_theoretic_consumer_choice_model.html){target="_blank"}
